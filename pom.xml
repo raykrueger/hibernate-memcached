@@ -8,6 +8,21 @@
     <name>hibernate-memcached</name>
     <url>http://code.google.com/p/hibernate-memcached/</url>
 
+    <developers>
+        <developer>
+            <name>Ray Krueger</name>
+            <url>http://raykrueger.blogspot.com/</url>
+            <timezone>-6</timezone>
+        </developer>
+    </developers>
+
+    <licenses>
+        <license>
+            <name>Apache License, Version 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0</url>
+        </license>
+    </licenses>
+
     <repositories>
         <repository>
             <id>mine</id>
