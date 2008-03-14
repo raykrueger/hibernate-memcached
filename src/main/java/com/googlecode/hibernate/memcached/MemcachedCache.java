@@ -36,17 +36,19 @@ public class MemcachedCache implements Cache {
     private final MemcachedClient memcachedClient;
     private long asynchGetTimeoutMillis = 500;
     private int cacheTimeSeconds = 300;
+    private final String NAMESPACE_KEY_INDEX;
 
     public MemcachedCache(String namespace, MemcachedClient memcachedClient) {
         this.namespace = namespace;
         this.memcachedClient = memcachedClient;
+        NAMESPACE_KEY_INDEX = namespace + ":keyIndex";
     }
 
     private Object memcacheGet(Object key) {
         try {
             return memcachedClient.asyncGet(toKey(key)).get(asynchGetTimeoutMillis, TimeUnit.MILLISECONDS);
         } catch (InterruptedException e) {
-            return null;
+            throw new RuntimeException("Interupted", e);
         } catch (ExecutionException e) {
             return null;
         } catch (TimeoutException e) {
@@ -59,7 +61,7 @@ public class MemcachedCache implements Cache {
     }
 
     private String toKey(Object key) {
-        return namespace + ":" + String.valueOf(key).replace(' ', '_');
+        return namespace + ":" + getNamespaceIndex() + ":" + String.valueOf(key).replace(' ', '_');
     }
 
     public Object read(Object key) throws CacheException {
@@ -83,7 +85,7 @@ public class MemcachedCache implements Cache {
     }
 
     public void clear() throws CacheException {
-        //what to do, what to do...
+        memcachedClient.incr(NAMESPACE_KEY_INDEX, 1);
     }
 
     public void destroy() throws CacheException {
@@ -125,5 +127,22 @@ public class MemcachedCache implements Cache {
 
     public String toString() {
         return "Memcached (" + namespace + ")";
+    }
+
+    private int getNamespaceIndex() {
+        Object o = null;
+        try {
+            o = memcachedClient.asyncGet(NAMESPACE_KEY_INDEX).get(asynchGetTimeoutMillis, TimeUnit.MILLISECONDS);
+        } catch (InterruptedException e) {
+            throw new RuntimeException("Interupted", e);
+        } catch (ExecutionException e) {
+            //ignored
+        } catch (TimeoutException e) {
+            //ignored
+        }
+        if (o == null) {
+            return 1;
+        }
+        return (Integer) o;
     }
 }
