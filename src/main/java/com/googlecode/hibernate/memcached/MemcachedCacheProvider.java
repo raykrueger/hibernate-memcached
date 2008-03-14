@@ -43,7 +43,7 @@ public class MemcachedCacheProvider implements CacheProvider {
     }
 
     public void start(Properties properties) throws CacheException {
-        String serverList = properties.getProperty("memcached.servers", "localhost:11211");
+        String serverList = properties.getProperty("hibernate.memcached.servers", "localhost:11211");
         try {
             client = new MemcachedClient(AddrUtil.getAddresses(serverList));
         } catch (IOException e) {
