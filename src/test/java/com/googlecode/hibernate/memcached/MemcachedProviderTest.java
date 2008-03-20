@@ -18,8 +18,6 @@ import junit.framework.TestCase;
 
 import java.util.Properties;
 
-import org.hibernate.cache.Cache;
-
 /**
  * DOCUMENT ME!
  *
@@ -32,8 +30,14 @@ public class MemcachedProviderTest extends TestCase {
         Properties properties = new Properties();
         //properties.setProperty("memcached.servers", "");
         provider.start(properties);
-        Cache cache = provider.buildCache("test", properties);
+        MemcachedCache cache = (MemcachedCache) provider.buildCache("test", properties);
         assertNotNull(cache);
+
+        //assert Defaults
+        assertFalse(cache.isClearSupported());
+        assertEquals(500, cache.getAsynchGetTimeoutMillis());
+        assertEquals(300, cache.getCacheTimeSeconds());
+
         provider.stop();
     }
 
