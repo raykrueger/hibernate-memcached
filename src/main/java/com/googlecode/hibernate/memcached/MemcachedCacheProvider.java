@@ -14,16 +14,15 @@
  */
 package com.googlecode.hibernate.memcached;
 
-import org.hibernate.cache.CacheProvider;
+import net.spy.memcached.AddrUtil;
+import net.spy.memcached.MemcachedClient;
 import org.hibernate.cache.Cache;
 import org.hibernate.cache.CacheException;
+import org.hibernate.cache.CacheProvider;
 import org.hibernate.cache.Timestamper;
 
-import java.util.Properties;
 import java.io.IOException;
-
-import net.spy.memcached.MemcachedClient;
-import net.spy.memcached.AddrUtil;
+import java.util.Properties;
 
 /**
  * DOCUMENT ME!
@@ -33,9 +32,29 @@ import net.spy.memcached.AddrUtil;
 public class MemcachedCacheProvider implements CacheProvider {
 
     MemcachedClient client;
+    public static final String PROP_SERVERS = "hibernate.memcached.servers";
 
     public Cache buildCache(String regionName, Properties properties) throws CacheException {
-        return new MemcachedCache(regionName, client);
+        MemcachedCache cache = new MemcachedCache(regionName, client);
+
+        String memcachedPrefix = "hibernate.memcached." + regionName;
+
+        String propAsynchGetTimeoutMillis = memcachedPrefix + ".asynchGetTimeoutMillis";
+        if (properties.containsKey(propAsynchGetTimeoutMillis)) {
+            cache.setAsynchGetTimeoutMillis(Long.valueOf(properties.getProperty(propAsynchGetTimeoutMillis)));
+        }
+
+        String propCacheTimeSeconds = memcachedPrefix + ".cacheTimeSeconds";
+        if (properties.containsKey(propCacheTimeSeconds)) {
+            cache.setCacheTimeSeconds(Integer.valueOf(properties.getProperty(propCacheTimeSeconds)));
+        }
+
+        String propClearSupported = memcachedPrefix + ".clearSupported";
+        if (properties.containsKey(propClearSupported)) {
+            cache.setClearSupported(Boolean.valueOf(properties.getProperty(propClearSupported)));
+        }
+
+        return cache;
     }
 
     public long nextTimestamp() {
@@ -43,7 +62,7 @@ public class MemcachedCacheProvider implements CacheProvider {
     }
 
     public void start(Properties properties) throws CacheException {
-        String serverList = properties.getProperty("hibernate.memcached.servers", "localhost:11211");
+        String serverList = properties.getProperty(PROP_SERVERS, "localhost:11211");
         try {
             client = new MemcachedClient(AddrUtil.getAddresses(serverList));
         } catch (IOException e) {

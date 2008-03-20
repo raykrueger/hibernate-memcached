@@ -14,16 +14,15 @@
  */
 package com.googlecode.hibernate.memcached;
 
+import net.spy.memcached.MemcachedClient;
 import org.hibernate.cache.Cache;
 import org.hibernate.cache.CacheException;
 import org.hibernate.cache.Timestamper;
 
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
-
-import net.spy.memcached.MemcachedClient;
 
 /**
  * DOCUMENT ME!
@@ -34,21 +33,46 @@ public class MemcachedCache implements Cache {
 
     private final String namespace;
     private final MemcachedClient memcachedClient;
+    private final String namespaceIndexKey;
     private long asynchGetTimeoutMillis = 500;
     private int cacheTimeSeconds = 300;
-    private final String NAMESPACE_KEY_INDEX;
+    private boolean clearSupported = false;
 
     public MemcachedCache(String namespace, MemcachedClient memcachedClient) {
         this.namespace = namespace;
         this.memcachedClient = memcachedClient;
-        NAMESPACE_KEY_INDEX = namespace + ":keyIndex";
+        namespaceIndexKey = namespace + ":index_key";
+    }
+
+    public long getAsynchGetTimeoutMillis() {
+        return asynchGetTimeoutMillis;
+    }
+
+    public void setAsynchGetTimeoutMillis(long asynchGetTimeoutMillis) {
+        this.asynchGetTimeoutMillis = asynchGetTimeoutMillis;
+    }
+
+    public int getCacheTimeSeconds() {
+        return cacheTimeSeconds;
+    }
+
+    public void setCacheTimeSeconds(int cacheTimeSeconds) {
+        this.cacheTimeSeconds = cacheTimeSeconds;
+    }
+
+    public boolean isClearSupported() {
+        return clearSupported;
+    }
+
+    public void setClearSupported(boolean clearSupported) {
+        this.clearSupported = clearSupported;
     }
 
     private Object memcacheGet(Object key) {
         try {
             return memcachedClient.asyncGet(toKey(key)).get(asynchGetTimeoutMillis, TimeUnit.MILLISECONDS);
         } catch (InterruptedException e) {
-            throw new RuntimeException("Interupted", e);
+            throw new RuntimeException("Interrupted", e);
         } catch (ExecutionException e) {
             return null;
         } catch (TimeoutException e) {
@@ -85,7 +109,9 @@ public class MemcachedCache implements Cache {
     }
 
     public void clear() throws CacheException {
-        memcachedClient.incr(NAMESPACE_KEY_INDEX, 1);
+        if (clearSupported) {
+            memcachedClient.incr(namespaceIndexKey, 1, 1);
+        }
     }
 
     public void destroy() throws CacheException {
@@ -129,20 +155,21 @@ public class MemcachedCache implements Cache {
         return "Memcached (" + namespace + ")";
     }
 
-    private int getNamespaceIndex() {
-        Object o = null;
-        try {
-            o = memcachedClient.asyncGet(NAMESPACE_KEY_INDEX).get(asynchGetTimeoutMillis, TimeUnit.MILLISECONDS);
-        } catch (InterruptedException e) {
-            throw new RuntimeException("Interupted", e);
-        } catch (ExecutionException e) {
-            //ignored
-        } catch (TimeoutException e) {
-            //ignored
+    private long getNamespaceIndex() {
+        Long index = 0L;
+
+        if (clearSupported) {
+            try {
+                index = (Long) memcachedClient.asyncGet(namespaceIndexKey).get(asynchGetTimeoutMillis, TimeUnit.MILLISECONDS);
+            } catch (InterruptedException e) {
+                throw new RuntimeException("Interupted", e);
+            } catch (ExecutionException e) {
+                //ignored
+            } catch (TimeoutException e) {
+                //ignored
+            }
         }
-        if (o == null) {
-            return 1;
-        }
-        return (Integer) o;
+
+        return index;
     }
 }
