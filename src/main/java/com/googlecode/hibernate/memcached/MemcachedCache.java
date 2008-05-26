@@ -40,10 +40,10 @@ public class MemcachedCache implements Cache {
     private boolean clearSupported = false;
     private KeyStrategy keyStrategy = new DefaultKeyStrategy();
 
-    public MemcachedCache(String namespace, MemcachedClient memcachedClient) {
-        this.namespace = namespace;
+    public MemcachedCache(String regionName, MemcachedClient memcachedClient) {
+        this.namespace = (regionName != null) ? regionName : "default";
         this.memcachedClient = memcachedClient;
-        namespaceIndexKey = namespace + ":index_key";
+        namespaceIndexKey = this.namespace.replace(' ', '_') + ":index_key";
     }
 
     public int getCacheTimeSeconds() {
@@ -106,7 +106,7 @@ public class MemcachedCache implements Cache {
     }
 
     public void destroy() throws CacheException {
-        memcachedClient.shutdown();
+        //the client is shared by default with all cache instances, so don't shut it down.
     }
 
     public void lock(Object key) throws CacheException {
@@ -148,10 +148,17 @@ public class MemcachedCache implements Cache {
     }
 
     private long getNamespaceIndex() {
-        Long index;
+        Long index = null;
 
         if (clearSupported) {
-            index = (Long) memcacheGet(namespaceIndexKey);
+            try {
+                String value = (String) memcachedClient.get(namespaceIndexKey);
+                if (value != null) {
+                    index = Long.parseLong(value);
+                }
+            } catch (OperationTimeoutException e) {
+                log.warn("Cache 'get' timed out for key [" + namespaceIndexKey + "]", e);
+            }
             if (index != null) {
                 return index;
             }
