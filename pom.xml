@@ -29,6 +29,11 @@
             <name>mine</name>
             <url>http://hibernate-memcached.googlecode.com/svn/trunk/m2/repository</url>
         </repository>
+        <repository>
+            <id>dustin</id>
+            <name>dustin</name>
+            <url>http://bleu.west.spy.net/~dustin/repo/</url>
+        </repository>
     </repositories>
 
     <build>
@@ -73,10 +78,10 @@
         <dependency>
             <groupId>net.spy</groupId>
             <artifactId>memcached</artifactId>
-            <version>2.0</version>
+            <version>2.1rc2</version>
         </dependency>
         <dependency>
-            <groupId>net.spy</groupId>
+            <groupId>spy</groupId>
             <artifactId>spy</artifactId>
             <version>2.4</version>
         </dependency>
