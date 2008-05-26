@@ -15,41 +15,35 @@
 package com.googlecode.hibernate.memcached;
 
 import net.spy.memcached.MemcachedClient;
+import net.spy.memcached.OperationTimeoutException;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.hibernate.cache.Cache;
 import org.hibernate.cache.CacheException;
 import org.hibernate.cache.Timestamper;
 
 import java.util.Map;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 
 /**
- * DOCUMENT ME!
+ * It is recommended that you use an instance MemcachedClient that is version 2.0.3 or better.
  *
  * @author Ray Krueger
  */
 public class MemcachedCache implements Cache {
 
+    private static final Log log = LogFactory.getLog(MemcachedCache.class);
+
     private final String namespace;
     private final MemcachedClient memcachedClient;
     private final String namespaceIndexKey;
-    private long asynchGetTimeoutMillis = 500;
     private int cacheTimeSeconds = 300;
     private boolean clearSupported = false;
+    private KeyStrategy keyStrategy = new DefaultKeyStrategy();
 
     public MemcachedCache(String namespace, MemcachedClient memcachedClient) {
         this.namespace = namespace;
         this.memcachedClient = memcachedClient;
         namespaceIndexKey = namespace + ":index_key";
-    }
-
-    public long getAsynchGetTimeoutMillis() {
-        return asynchGetTimeoutMillis;
-    }
-
-    public void setAsynchGetTimeoutMillis(long asynchGetTimeoutMillis) {
-        this.asynchGetTimeoutMillis = asynchGetTimeoutMillis;
     }
 
     public int getCacheTimeSeconds() {
@@ -70,14 +64,11 @@ public class MemcachedCache implements Cache {
 
     private Object memcacheGet(Object key) {
         try {
-            return memcachedClient.asyncGet(toKey(key)).get(asynchGetTimeoutMillis, TimeUnit.MILLISECONDS);
-        } catch (InterruptedException e) {
-            throw new RuntimeException("Interrupted", e);
-        } catch (ExecutionException e) {
-            return null;
-        } catch (TimeoutException e) {
-            return null;
+            return memcachedClient.get(toKey(key));
+        } catch (OperationTimeoutException e) {
+            log.warn("Cache 'get' timed out for key [" + toKey(key) + "]", e);
         }
+        return null;
     }
 
     private void memcacheSet(Object key, Object o) {
@@ -85,7 +76,7 @@ public class MemcachedCache implements Cache {
     }
 
     private String toKey(Object key) {
-        return namespace + ":" + getNamespaceIndex() + ":" + String.valueOf(key).replace(' ', '_');
+        return keyStrategy.toKey(namespace, getNamespaceIndex(), key);
     }
 
     public Object read(Object key) throws CacheException {
@@ -115,6 +106,7 @@ public class MemcachedCache implements Cache {
     }
 
     public void destroy() throws CacheException {
+        memcachedClient.shutdown();
     }
 
     public void lock(Object key) throws CacheException {
@@ -128,7 +120,7 @@ public class MemcachedCache implements Cache {
     }
 
     public int getTimeout() {
-        return 60000;//no idea
+        return cacheTimeSeconds;
     }
 
     public String getRegionName() {
@@ -156,20 +148,23 @@ public class MemcachedCache implements Cache {
     }
 
     private long getNamespaceIndex() {
-        Long index = 0L;
+        Long index;
 
         if (clearSupported) {
-            try {
-                index = (Long) memcachedClient.asyncGet(namespaceIndexKey).get(asynchGetTimeoutMillis, TimeUnit.MILLISECONDS);
-            } catch (InterruptedException e) {
-                throw new RuntimeException("Interupted", e);
-            } catch (ExecutionException e) {
-                //ignored
-            } catch (TimeoutException e) {
-                //ignored
+            index = (Long) memcacheGet(namespaceIndexKey);
+            if (index != null) {
+                return index;
             }
         }
 
-        return index;
+        return 0L;
+    }
+
+    public KeyStrategy getKeyStrategy() {
+        return keyStrategy;
+    }
+
+    public void setKeyStrategy(KeyStrategy keyStrategy) {
+        this.keyStrategy = keyStrategy;
     }
 }
