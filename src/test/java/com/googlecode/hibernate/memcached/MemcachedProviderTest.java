@@ -14,8 +14,6 @@
  */
 package com.googlecode.hibernate.memcached;
 
-import junit.framework.TestCase;
-
 import java.util.Properties;
 
 /**
@@ -23,7 +21,7 @@ import java.util.Properties;
  *
  * @author Ray Krueger
  */
-public class MemcachedProviderTest extends TestCase {
+public class MemcachedProviderTest extends BaseTestCase {
     private MemcachedCacheProvider provider;
 
     public void test_defaults() throws Exception {

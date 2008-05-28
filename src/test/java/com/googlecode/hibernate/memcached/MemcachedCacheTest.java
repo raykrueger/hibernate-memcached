@@ -1,6 +1,5 @@
 package com.googlecode.hibernate.memcached;
 
-import junit.framework.TestCase;
 import net.spy.memcached.AddrUtil;
 import net.spy.memcached.MemcachedClient;
 
@@ -9,7 +8,7 @@ import net.spy.memcached.MemcachedClient;
  *
  * @author Ray Krueger
  */
-public class MemcachedCacheTest extends TestCase {
+public class MemcachedCacheTest extends BaseTestCase {
 
     MemcachedCache cache;
     MemcachedClient client;
