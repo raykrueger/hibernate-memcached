@@ -55,16 +55,16 @@ public class MemcachedCacheProvider implements CacheProvider {
             cache.setKeyStrategy(keyStrategy);
         }
 
-        String regionPrefix = PROP_PREFIX + regionName;
+        String regionPrefix = PROP_PREFIX + regionName + ".";
 
-        String propCacheTimeSeconds = regionPrefix + ".cacheTimeSeconds";
+        String propCacheTimeSeconds = regionPrefix + "cacheTimeSeconds";
         if (properties.containsKey(propCacheTimeSeconds)) {
             cache.setCacheTimeSeconds(Integer.valueOf(properties.getProperty(propCacheTimeSeconds)));
         } else {
             cache.setCacheTimeSeconds(defaultCacheTimeSeconds);
         }
 
-        String propClearSupported = regionPrefix + ".clearSupported";
+        String propClearSupported = regionPrefix + "clearSupported";
         if (properties.containsKey(propClearSupported)) {
             cache.setClearSupported(Boolean.valueOf(properties.getProperty(propClearSupported)));
         } else {
@@ -89,7 +89,7 @@ public class MemcachedCacheProvider implements CacheProvider {
     private boolean getDefaultClearSupported(Properties properties) {
         boolean defaultClearSupported = DEFAULT_CLEAR_SUPPORTED;
         String defaultClearSupportedProp =
-                properties.getProperty(PROP_PREFIX + ".deafultClearSupported");
+                properties.getProperty(PROP_PREFIX + "deafultClearSupported");
         if (defaultClearSupportedProp != null) {
             defaultClearSupported = Boolean.parseBoolean(defaultClearSupportedProp);
         }
