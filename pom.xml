@@ -41,7 +41,21 @@
         <developerConnection>scm:svn:https://hibernate-memcached.googlecode.com/svn/trunk</developerConnection>
         <url>http://code.google.com/p/hibernate-memcached/source/browse</url>
     </scm>
-    
+
+    <distributionManagement>
+        <!-- use the following if you're not using a snapshot version. -->
+        <repository>
+            <id>googlecode</id>
+            <name>Repository Name</name>
+            <url>scm:svn:https://raykrueger.googlecode.com/svn/repository</url>
+        </repository>
+        <!-- use the following if you ARE using a snapshot version. -->
+        <snapshotRepository>
+            <id>googlecode</id>
+            <name>Repository Name</name>
+            <url>scm:svn:https://raykrueger.googlecode.com/svn/repository</url>
+        </snapshotRepository>
+    </distributionManagement>
     <build>
         <plugins>
             <plugin>
