@@ -183,13 +183,15 @@ public class MemcachedCache implements Cache {
         if (clearSupported) {
             try {
                 Object value = memcachedClient.get(clearIndexKey);
-                if (value instanceof String) {
-                    index = Long.parseLong((String) value);
-                } else if (value instanceof Long) {
-                    index = (Long) value;
-                } else {
-                    throw new IllegalArgumentException(
-                            "Unsupported type found for clear index at cache key [" + clearIndexKey + "]");
+                if (value != null) {
+                    if (value instanceof String) {
+                        index = Long.parseLong((String) value);
+                    } else if (value instanceof Long) {
+                        index = (Long) value;
+                    } else {
+                        throw new IllegalArgumentException(
+                                "Unsupported type [" + value.getClass() + "] found for clear index at cache key [" + clearIndexKey + "]");
+                    }
                 }
             } catch (OperationTimeoutException e) {
                 log.warn("Cache 'get' timed out for key [" + clearIndexKey + "]", e);

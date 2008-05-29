@@ -27,7 +27,7 @@
         <repository>
             <id>mine</id>
             <name>mine</name>
-            <url>http://hibernate-memcached.googlecode.com/svn/trunk/m2/repository</url>
+            <url>http://raykrueger.googlecode.com/svn/repository</url>
         </repository>
         <repository>
             <id>dustin</id>
@@ -57,7 +57,6 @@
                 <configuration>
                     <downloadSources>true</downloadSources>
                     <downloadJavadocs>false</downloadJavadocs>
-                    <jdkName>1.5</jdkName>
                 </configuration>
             </plugin>
             <plugin>
@@ -81,29 +80,6 @@
 
     <dependencies>
         <dependency>
-            <groupId>org.hibernate</groupId>
-            <artifactId>hibernate</artifactId>
-            <version>3.2.6.ga</version>
-            <!--
-                        <exclusions>
-                            <exclusion>
-                                <groupId>javax.transaction</groupId>
-                                <artifactId>jta</artifactId>
-                            </exclusion>
-                        </exclusions>
-            -->
-        </dependency>
-        <dependency>
-            <groupId>org.hibernate</groupId>
-            <artifactId>hibernate-annotations</artifactId>
-            <version>3.3.1.GA</version>
-        </dependency>
-        <dependency>
-            <groupId>log4j</groupId>
-            <artifactId>log4j</artifactId>
-            <version>1.2.9</version>
-        </dependency>
-        <dependency>
             <groupId>net.spy</groupId>
             <artifactId>memcached</artifactId>
             <version>2.1rc2</version>
@@ -112,6 +88,24 @@
             <groupId>spy</groupId>
             <artifactId>spy</artifactId>
             <version>2.4</version>
+        </dependency>
+        <dependency>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate</artifactId>
+            <version>3.2.6.ga</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate-annotations</artifactId>
+            <version>3.3.1.GA</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>log4j</groupId>
+            <artifactId>log4j</artifactId>
+            <version>1.2.9</version>
+            <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>junit</groupId>
