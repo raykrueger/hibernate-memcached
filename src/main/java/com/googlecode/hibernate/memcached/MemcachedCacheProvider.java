@@ -27,7 +27,43 @@ import java.io.IOException;
 import java.util.Properties;
 
 /**
- * DOCUMENT ME!
+ * Configures an instance of {@link MemcachedCache} for use as a second-level cache in Hibernate.
+ * To use set the hibernate property <i>hibernate.cache.provider_class</i> to the name of this class.
+ * <p/>
+ * There are two types of property settings that the MemcachedCacheProvider supports, cache-wide properties
+ * and region-name properties.
+ * <p/>
+ * <b>Cache wide properties</b>
+ * <table border='1'>
+ * <tr><th>Property</th><th>Default</th><th>Description</th></tr>
+ * <tr><td>hibernate.memcached.servers</td><td>localhost:11211</td>
+ * <td>Space delimited list of memcached instances in host:port format</td></tr>
+ * <tr><td>hibernate.memcached.cacheTimeSeconds</td><td>300</td>
+ * <td>The default number of seconds items should be cached. Can be overriden at the regon level.</td></tr>
+ * <tr><td>hibernate.memcached.keyStrategy</td><td>{@link DefaultKeyStrategy}</td>
+ * <td>Sets the strategy class to to use for generating cache keys.
+ * Must provide a class name that implements {@link com.googlecode.hibernate.memcached.KeyStrategy}</td></tr>
+ * <tr><td>hibernate.memcached.clearSupported</td><td>false</td>
+ * <td>Enables support for the {@link MemcachedCache#clear()} method for all cache regions.
+ * The way clear is implemented for memcached is expensive and adds overhead to all get/set operations.
+ * It is not recommended for production use.</td></tr>
+ * </table>
+ * <p/>
+ * <b>Cache Region properties</b><br/>
+ * Cache regon properties are set by giving your cached data a "region name" in hibernate.
+ * You can tune the MemcachedCache instance for your region using the following properties.
+ * These properties essentially override the cache-wide properties above.<br/>
+ * <table border='1'>
+ * <tr><th>Property</th><th>Default</th><th>Description</th></tr>
+ * <tr><td>hibernate.memcached.[region-name].cacheTimeSeconds</td>
+ * <td>none see hibernate.memcached.cacheTimeSeconds</td>
+ * <td>Set the cache time for this cache region, overriding the cache-wide setting.</td></tr>
+ * <tr><td>hibernate.memcached.[region-name].clearSupported</td>
+ * <td>none, see hibernate.memcached.clearSupported</td>
+ * <td>Enables clear() operations for this cache region only.
+ * Again, the clear operation incurs cost on every get/set operation.</td>
+ * </tr>
+ * </table>
  *
  * @author Ray Krueger
  */
@@ -48,12 +84,7 @@ public class MemcachedCacheProvider implements CacheProvider {
         int defaultCacheTimeSeconds = getDefaultCacheTimeSeconds(properties);
         boolean defaultClearSupported = getDefaultClearSupported(properties);
 
-        String keyStrategyClassProp =
-                properties.getProperty(PROP_PREFIX + "keyStrategy");
-        if (keyStrategyClassProp != null) {
-            KeyStrategy keyStrategy = instantiateKeyStrategy(properties.getProperty(keyStrategyClassProp));
-            cache.setKeyStrategy(keyStrategy);
-        }
+        setKeyStrategy(properties, cache);
 
         String regionPrefix = PROP_PREFIX + regionName + ".";
 
@@ -74,7 +105,17 @@ public class MemcachedCacheProvider implements CacheProvider {
         return cache;
     }
 
-    private KeyStrategy instantiateKeyStrategy(String cls) {
+    private void setKeyStrategy(Properties properties, MemcachedCache cache) {
+        String keyStrategyClassProp =
+                properties.getProperty(PROP_PREFIX + "keyStrategy");
+        if (keyStrategyClassProp != null) {
+            KeyStrategy keyStrategy = instantiateKeyStrategy(keyStrategyClassProp);
+            cache.setKeyStrategy(keyStrategy);
+            log.debug("Using KeyStrategy instance: [" + keyStrategy + "]");
+        }
+    }
+
+    protected KeyStrategy instantiateKeyStrategy(String cls) {
         try {
             return (KeyStrategy) Class.forName(cls).newInstance();
         } catch (InstantiationException e) {
@@ -89,7 +130,7 @@ public class MemcachedCacheProvider implements CacheProvider {
     private boolean getDefaultClearSupported(Properties properties) {
         boolean defaultClearSupported = DEFAULT_CLEAR_SUPPORTED;
         String defaultClearSupportedProp =
-                properties.getProperty(PROP_PREFIX + "deafultClearSupported");
+                properties.getProperty(PROP_PREFIX + "clearSupported");
         if (defaultClearSupportedProp != null) {
             defaultClearSupported = Boolean.parseBoolean(defaultClearSupportedProp);
         }
@@ -99,7 +140,7 @@ public class MemcachedCacheProvider implements CacheProvider {
     private int getDefaultCacheTimeSeconds(Properties properties) {
         int defaultCacheTimeSeconds = DEFAULT_CACHE_TIME_SECONDS;
         String defaultCacheTimeSecondsProp =
-                properties.getProperty(PROP_PREFIX + "defaultCacheTimeSeconds");
+                properties.getProperty(PROP_PREFIX + "cacheTimeSeconds");
         if (defaultCacheTimeSecondsProp != null) {
             defaultCacheTimeSeconds = Integer.parseInt(defaultCacheTimeSecondsProp);
         }

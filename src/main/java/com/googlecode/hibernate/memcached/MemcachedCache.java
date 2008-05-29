@@ -33,17 +33,17 @@ public class MemcachedCache implements Cache {
 
     private static final Log log = LogFactory.getLog(MemcachedCache.class);
 
-    private final String namespace;
+    private final String regionName;
     private final MemcachedClient memcachedClient;
-    private final String namespaceIndexKey;
+    private final String cleanIndexKey;
     private int cacheTimeSeconds = 300;
     private boolean clearSupported = false;
     private KeyStrategy keyStrategy = new DefaultKeyStrategy();
 
     public MemcachedCache(String regionName, MemcachedClient memcachedClient) {
-        this.namespace = (regionName != null) ? regionName : "default";
+        this.regionName = (regionName != null) ? regionName : "default";
         this.memcachedClient = memcachedClient;
-        namespaceIndexKey = this.namespace.replace(' ', '_') + ":index_key";
+        cleanIndexKey = this.regionName.replace(' ', '_') + ":index_key";
     }
 
     public int getCacheTimeSeconds() {
@@ -63,20 +63,24 @@ public class MemcachedCache implements Cache {
     }
 
     private Object memcacheGet(Object key) {
+        String stringKey = toKey(key);
+        log.debug("Memcache.get(" + stringKey + "}");
         try {
-            return memcachedClient.get(toKey(key));
+            return memcachedClient.get(stringKey);
         } catch (OperationTimeoutException e) {
-            log.warn("Cache 'get' timed out for key [" + toKey(key) + "]", e);
+            log.warn("Cache 'get' timed out for key [" + stringKey + "]", e);
         }
         return null;
     }
 
     private void memcacheSet(Object key, Object o) {
-        memcachedClient.set(toKey(key), cacheTimeSeconds, o);
+        String stringKey = toKey(key);
+        log.debug("Memcache.set(" + stringKey + "}");
+        memcachedClient.set(stringKey, cacheTimeSeconds, o);
     }
 
     private String toKey(Object key) {
-        return keyStrategy.toKey(namespace, getNamespaceIndex(), key);
+        return keyStrategy.toKey(regionName, getCleanIndex(), key);
     }
 
     public Object read(Object key) throws CacheException {
@@ -101,7 +105,7 @@ public class MemcachedCache implements Cache {
 
     public void clear() throws CacheException {
         if (clearSupported) {
-            memcachedClient.incr(namespaceIndexKey, 1, 1);
+            memcachedClient.incr(cleanIndexKey, 1, 1);
         }
     }
 
@@ -124,7 +128,7 @@ public class MemcachedCache implements Cache {
     }
 
     public String getRegionName() {
-        return namespace;
+        return regionName;
     }
 
     public long getSizeInMemory() {
@@ -144,20 +148,25 @@ public class MemcachedCache implements Cache {
     }
 
     public String toString() {
-        return "Memcached (" + namespace + ")";
+        return "Memcached (" + regionName + ")";
     }
 
-    private long getNamespaceIndex() {
+    private long getCleanIndex() {
         Long index = null;
 
         if (clearSupported) {
             try {
-                String value = (String) memcachedClient.get(namespaceIndexKey);
-                if (value != null) {
-                    index = Long.parseLong(value);
+                Object value = memcachedClient.get(cleanIndexKey);
+                if (value instanceof String) {
+                    index = Long.parseLong((String) value);
+                } else if (value instanceof Long) {
+                    index = (Long) value;
+                } else {
+                    throw new IllegalArgumentException(
+                            "Unsupported type found for clean index at cache key [" + cleanIndexKey + "]");
                 }
             } catch (OperationTimeoutException e) {
-                log.warn("Cache 'get' timed out for key [" + namespaceIndexKey + "]", e);
+                log.warn("Cache 'get' timed out for key [" + cleanIndexKey + "]", e);
             }
             if (index != null) {
                 return index;

@@ -24,5 +24,33 @@ public class DefaultKeyStrategyTest extends BaseTestCase {
         assertEquals("Ihavespaces:0:sodoI", key);
     }
 
+    public void test_really_long_keys_get_truncated() throws Exception {
+        String regionName = "";
+        String key = "";
+        for (int i = 0; i < 150; i++) {
+            key += "x";
+            regionName += "x";
+        }
+
+        assertEquals("f42403ec-dc00-398a-bf14-72669e131636", strategy.toKey(regionName, 0, key));
+    }
+
+    public void test_custom_truncation() throws Exception {
+
+        strategy = new DefaultKeyStrategy() {
+            protected String truncateKey(String key) {
+                return "great-googly-moogly";
+            }
+        };
+
+        String regionName = "";
+        String key = "";
+        for (int i = 0; i < 150; i++) {
+            key += "x";
+            regionName += "x";
+        }
+
+        assertEquals("great-googly-moogly", strategy.toKey(regionName, 0, key));
+    }
 
 }

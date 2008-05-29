@@ -52,6 +52,18 @@ public class MemcachedProviderTest extends BaseTestCase {
         assertEquals(500, cache.getCacheTimeSeconds());
     }
 
+    public void test_uuid_key_strategy() throws Exception {
+        MemcachedCacheProvider provider = new MemcachedCacheProvider();
+        Properties properties = new Properties();
+
+        properties.setProperty("hibernate.memcached.keyStrategy", UUIDKeyStrategy.class.getName());
+
+        provider.start(properties);
+        MemcachedCache cache = (MemcachedCache) provider.buildCache("test", properties);
+        assertNotNull(cache);
+    }
+
+
     protected void setUp() throws Exception {
         provider = new MemcachedCacheProvider();
     }
