@@ -14,7 +14,7 @@ public class DefaultKeyStrategyTest extends BaseTestCase {
         assertEquals("test:0:boing", key);
     }
 
-    public void test_null_namespace_and_null_key() {
+    public void test_null_region_and_null_key() {
         String key = strategy.toKey(null, 0, null);
         assertEquals("null:0:null", key);
     }

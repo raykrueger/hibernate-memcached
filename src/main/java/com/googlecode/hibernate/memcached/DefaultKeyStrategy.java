@@ -31,8 +31,8 @@ public class DefaultKeyStrategy extends AbstractKeyStrategy {
 
     private int maxKeyLength = DEFAULT_MAX_KEY_LENGTH;
 
-    public String toKey(String regionName, long cleanIndex, Object key) {
-        String keyString = convertKeyToString(regionName, cleanIndex, key);
+    public String toKey(String regionName, long clearIndex, Object key) {
+        String keyString = convertKeyToString(regionName, clearIndex, key);
         if (keyString.length() > maxKeyLength) {
             return truncateKey(keyString);
         }

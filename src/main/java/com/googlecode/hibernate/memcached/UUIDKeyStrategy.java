@@ -19,8 +19,8 @@ public class UUIDKeyStrategy extends AbstractKeyStrategy {
 
     private static final Log log = LogFactory.getLog(UUIDKeyStrategy.class);
 
-    public String toKey(String namespace, long namespaceIndex, Object key) {
-        String keyString = convertKeyToString(namespace, namespaceIndex, key);
+    public String toKey(String regionName, long clearIndex, Object key) {
+        String keyString = convertKeyToString(regionName, clearIndex, key);
         String uuidString = UUID.nameUUIDFromBytes(keyString.getBytes()).toString();
 
         if (log.isDebugEnabled()) {

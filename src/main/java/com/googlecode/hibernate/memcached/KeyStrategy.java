@@ -7,5 +7,5 @@ package com.googlecode.hibernate.memcached;
  */
 public interface KeyStrategy {
 
-    String toKey(String regionName, long namespaceIndex, Object key);
+    String toKey(String regionName, long clearIndex, Object key);
 }

@@ -25,7 +25,26 @@ import org.hibernate.cache.Timestamper;
 import java.util.Map;
 
 /**
- * It is recommended that you use an instance MemcachedClient that is version 2.0.3 or better.
+ * Wrapper around MemcachedClient instance to provide the bridge between Hiberante and Memcached.
+ * Uses the regionName given by Hibernate via the {@link com.googlecode.hibernate.memcached.MemcachedCacheProvider}
+ * when generating cache keys.
+ * All cache operations rely on using a {@link com.googlecode.hibernate.memcached.KeyStrategy}
+ * to generate cache keys for use in memcached.
+ * <p/>
+ * Support for the {@link #clear()} operation is disabled by default.<br/>
+ * There is no way for this instance of MemcachedCache to know what cache values to "clear" in a given Memcached instance.
+ * Clear functionality is implemented by incrementing a "clearIndex" value that is always included in the cache-key generation.
+ * When clear is called the memcached increment function is used to increment the global clean index. When clear is enabled,
+ * every cache action taken starts with a call to memcached to 'get' the clearIndex counter. That value is then
+ * applied to the cache key for the cache operation being taken. When the clearIndex is incremented this causes
+ * the MemcachedCache to generate different cache-keys than it was before. This results in previously cached data being
+ * abandoned in the cache, and left for memcached to deal with.
+ * <p/>
+ * For these reasons it is not recommended to rely on clear() as a regular production functionality,
+ * it is very expensive and generally not very useful anyway.
+ * <p/>
+ * The MemcachedCache treats Hibernate cache regions as namespaces in Memcached. For more information see the
+ * <a href="http://www.socialtext.net/memcached/index.cgi?faq#namespaces">memcached FAQ</a>.
  *
  * @author Ray Krueger
  */
@@ -35,7 +54,7 @@ public class MemcachedCache implements Cache {
 
     private final String regionName;
     private final MemcachedClient memcachedClient;
-    private final String cleanIndexKey;
+    private final String clearIndexKey;
     private int cacheTimeSeconds = 300;
     private boolean clearSupported = false;
     private KeyStrategy keyStrategy = new DefaultKeyStrategy();
@@ -43,7 +62,7 @@ public class MemcachedCache implements Cache {
     public MemcachedCache(String regionName, MemcachedClient memcachedClient) {
         this.regionName = (regionName != null) ? regionName : "default";
         this.memcachedClient = memcachedClient;
-        cleanIndexKey = this.regionName.replace(' ', '_') + ":index_key";
+        clearIndexKey = this.regionName.replace(' ', '_') + ":index_key";
     }
 
     public int getCacheTimeSeconds() {
@@ -80,7 +99,7 @@ public class MemcachedCache implements Cache {
     }
 
     private String toKey(Object key) {
-        return keyStrategy.toKey(regionName, getCleanIndex(), key);
+        return keyStrategy.toKey(regionName, getClearIndex(), key);
     }
 
     public Object read(Object key) throws CacheException {
@@ -105,7 +124,7 @@ public class MemcachedCache implements Cache {
 
     public void clear() throws CacheException {
         if (clearSupported) {
-            memcachedClient.incr(cleanIndexKey, 1, 1);
+            memcachedClient.incr(clearIndexKey, 1, 1);
         }
     }
 
@@ -151,22 +170,22 @@ public class MemcachedCache implements Cache {
         return "Memcached (" + regionName + ")";
     }
 
-    private long getCleanIndex() {
+    private long getClearIndex() {
         Long index = null;
 
         if (clearSupported) {
             try {
-                Object value = memcachedClient.get(cleanIndexKey);
+                Object value = memcachedClient.get(clearIndexKey);
                 if (value instanceof String) {
                     index = Long.parseLong((String) value);
                 } else if (value instanceof Long) {
                     index = (Long) value;
                 } else {
                     throw new IllegalArgumentException(
-                            "Unsupported type found for clean index at cache key [" + cleanIndexKey + "]");
+                            "Unsupported type found for clear index at cache key [" + clearIndexKey + "]");
                 }
             } catch (OperationTimeoutException e) {
-                log.warn("Cache 'get' timed out for key [" + cleanIndexKey + "]", e);
+                log.warn("Cache 'get' timed out for key [" + clearIndexKey + "]", e);
             }
             if (index != null) {
                 return index;
