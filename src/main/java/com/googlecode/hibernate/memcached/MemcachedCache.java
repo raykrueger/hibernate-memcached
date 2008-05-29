@@ -122,6 +122,13 @@ public class MemcachedCache implements Cache {
         memcachedClient.delete(toKey(key));
     }
 
+    /**
+     * Clear functionality is disabled by default.
+     * Read this class's javadoc for more detail.
+     *
+     * @throws CacheException
+     * @see com.googlecode.hibernate.memcached.MemcachedCache
+     */
     public void clear() throws CacheException {
         if (clearSupported) {
             memcachedClient.incr(clearIndexKey, 1, 1);
