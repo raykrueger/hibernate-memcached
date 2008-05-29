@@ -36,6 +36,12 @@
         </repository>
     </repositories>
 
+    <scm>
+        <connection>scm:svn:http://hibernate-memcached.googlecode.com/svn/trunk</connection>
+        <developerConnection>scm:svn:https://hibernate-memcached.googlecode.com/svn/trunk</developerConnection>
+        <url>http://code.google.com/p/hibernate-memcached/source/browse</url>
+    </scm>
+    
     <build>
         <plugins>
             <plugin>
@@ -62,9 +68,6 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-release-plugin</artifactId>
-                <configuration>
-                    <tagBase>https://svn.apache.org/repos/asf/maven/components/releases</tagBase>
-                </configuration>
             </plugin>
             <plugin>
                 <artifactId>maven-assembly-plugin</artifactId>
