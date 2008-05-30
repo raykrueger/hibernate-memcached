@@ -1,6 +1,6 @@
 package com.googlecode.hibernate.memcached.integration;
 
-import org.hibernate.criterion.Restrictions;
+import static org.hibernate.criterion.Restrictions.*;
 
 import java.util.Properties;
 
@@ -30,7 +30,12 @@ public class ContactIntegrationTest extends AbstractHibernateTestCase {
     }
 
     public void test_query_cache() {
-        Contact fromDB = (Contact) session.createCriteria(Contact.class).add(Restrictions.eq("firstName", "Ray")).add(Restrictions.eq("lastName", "Krueger")).setCacheable(true).setCacheRegion("contact.findByFirstNameAndLastName").uniqueResult();
+        Contact fromDB = (Contact) session.createCriteria(Contact.class)
+                .add(eq("firstName", "Ray"))
+                .add(eq("lastName", "Krueger"))
+                .setCacheable(true)
+                .setCacheRegion("contact.findByFirstNameAndLastName")
+                .uniqueResult();
         assertEquals(ray, fromDB);
     }
 
