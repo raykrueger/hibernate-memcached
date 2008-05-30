@@ -2,7 +2,7 @@ package com.googlecode.hibernate.memcached
 /**
  * @author Ray Krueger
  */
-class UUIDKeyStrategyTest extends GroovyTestCase {
+class UUIDKeyStrategyTest extends BaseTestCase {
 
     void testSomeShit() {
         UUIDKeyStrategy strategy = new UUIDKeyStrategy()

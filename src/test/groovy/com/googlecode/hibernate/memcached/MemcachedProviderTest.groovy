@@ -5,7 +5,7 @@ package com.googlecode.hibernate.memcached;
  *
  * @author Ray Krueger
  */
-class MemcachedProviderTest extends GroovyTestCase {
+class MemcachedProviderTest extends BaseTestCase {
 
     MemcachedCacheProvider provider
 

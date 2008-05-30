@@ -7,7 +7,7 @@ import net.spy.memcached.MemcachedClient
 * DOCUMENT ME!
 * @author Ray Krueger
 */
-class MemcachedCacheTest extends GroovyTestCase {
+class MemcachedCacheTest extends BaseTestCase {
 
     MemcachedCache cache
     MemcachedClient client

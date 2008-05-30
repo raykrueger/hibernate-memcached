@@ -5,7 +5,7 @@ package com.googlecode.hibernate.memcached
  *
  * @author Ray Krueger
  */
-class DefaultKeyStrategyTest extends GroovyTestCase {
+class DefaultKeyStrategyTest extends BaseTestCase {
 
     DefaultKeyStrategy strategy = new DefaultKeyStrategy()
 
