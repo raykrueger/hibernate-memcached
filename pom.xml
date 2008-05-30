@@ -32,7 +32,7 @@
         <repository>
             <id>dustin</id>
             <name>dustin</name>
-            <url>http://bleu.west.spy.net/~dustin/repo</url>
+            <url>http://bleu.west.spy.net/~dustin/repo/</url>
         </repository>
     </repositories>
 
@@ -47,13 +47,13 @@
         <repository>
             <id>googlecode</id>
             <name>Repository Name</name>
-            <url>file://${project.build.directory}/distribution</url>
+            <url>scm:svn:https://raykrueger.googlecode.com/svn/repository</url>
         </repository>
         <!-- use the following if you ARE using a snapshot version. -->
         <snapshotRepository>
             <id>googlecode</id>
             <name>Repository Name</name>
-            <url>file://${project.build.directory}/distribution</url>
+            <url>scm:svn:https://raykrueger.googlecode.com/svn/repository</url>
         </snapshotRepository>
     </distributionManagement>
     <build>
@@ -92,20 +92,6 @@
                     </descriptorRefs>
                 </configuration>
             </plugin>
-            <plugin>
-                <groupId>org.codehaus.groovy.maven</groupId>
-                <artifactId>gmaven-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>generateStubs</goal>
-                            <goal>compile</goal>
-                            <goal>generateTestStubs</goal>
-                            <goal>testCompile</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
         </plugins>
     </build>
 
@@ -141,19 +127,13 @@
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-            <version>4.4</version>
+            <version>3.8.1</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>hsqldb</groupId>
             <artifactId>hsqldb</artifactId>
             <version>1.8.0.7</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.codehaus.groovy</groupId>
-            <artifactId>groovy-all</artifactId>
-            <version>1.5.6</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
