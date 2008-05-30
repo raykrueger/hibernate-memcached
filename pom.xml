@@ -3,7 +3,7 @@
     <groupId>com.googlecode.memcached-hibernate</groupId>
     <artifactId>hibernate-memcached</artifactId>
     <packaging>jar</packaging>
-    <version>0.2</version>
+    <version>0.3-SNAPSHOT</version>
     <name>hibernate-memcached</name>
     <url>http://code.google.com/p/hibernate-memcached/</url>
 
@@ -37,9 +37,9 @@
     </repositories>
 
     <scm>
-        <connection>scm:svn:http://hibernate-memcached.googlecode.com/svn/tags/hibernate-memcached-0.2</connection>
-        <developerConnection>scm:svn:https://hibernate-memcached.googlecode.com/svn/tags/hibernate-memcached-0.2</developerConnection>
-        <url>http://code.google.com/p/hibernate-memcached/source/browse/tags/hibernate-memcached-0.2</url>
+        <connection>scm:svn:http://hibernate-memcached.googlecode.com/svn/trunk</connection>
+        <developerConnection>scm:svn:https://hibernate-memcached.googlecode.com/svn/trunk</developerConnection>
+        <url>http://code.google.com/p/hibernate-memcached/source/browse</url>
     </scm>
 
     <distributionManagement>
