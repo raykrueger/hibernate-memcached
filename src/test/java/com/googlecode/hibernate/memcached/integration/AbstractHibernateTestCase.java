@@ -53,7 +53,6 @@ public abstract class AbstractHibernateTestCase extends BaseTestCase {
     }
 
     protected void setUp() {
-        setLogLevel("DEBUG");
         setupBeforeTransaction();
         SessionFactory sessionFactory = getConfiguration().buildSessionFactory();
         session = sessionFactory.openSession();
@@ -73,7 +72,6 @@ public abstract class AbstractHibernateTestCase extends BaseTestCase {
         } finally {
             transaction.rollback();
             session.close();
-            resetLogging();
         }
     }
 

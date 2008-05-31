@@ -1,7 +1,7 @@
 package com.googlecode.hibernate.memcached;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.UUID;
 import java.util.regex.Pattern;
@@ -25,7 +25,7 @@ public class DefaultKeyStrategy extends AbstractKeyStrategy {
 
     public static final int DEFAULT_MAX_KEY_LENGTH = 250;
 
-    private static final Log log = LogFactory.getLog(DefaultKeyStrategy.class);
+    private final Logger log = LoggerFactory.getLogger(DefaultKeyStrategy.class);
 
     private static final Pattern CLEAN_PATTERN = Pattern.compile("\\s");
 
@@ -42,12 +42,11 @@ public class DefaultKeyStrategy extends AbstractKeyStrategy {
     protected String truncateKey(String key) {
         String uuidString = UUID.nameUUIDFromBytes(key.getBytes()).toString();
 
-        if (log.isWarnEnabled()) {
-            log.warn("Truncated key [" + key + "] to uuid [" + uuidString + "]. " +
-                    "Be sure to set cache region names whenever possible as the names Hibernate generates are really long. " +
-                    "Consider using the UUIDKeyStrategy when hibernate.cache.use_query_cache is enabled."
-            );
-        }
+        log.warn("Truncated key [{}] to uuid [{}]. " +
+                "Be sure to set cache region names whenever possible as the names Hibernate generates are really long. " +
+                "Consider using the UUIDKeyStrategy when hibernate.cache.use_query_cache is enabled."
+                , key, uuidString
+        );
 
         return uuidString;
     }

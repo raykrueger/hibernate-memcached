@@ -1,9 +1,6 @@
 package com.googlecode.hibernate.memcached
 
 import org.apache.log4j.BasicConfigurator
-import org.apache.log4j.Level
-import org.apache.log4j.Logger
-
 
 /**
 * DOCUMENT ME!
@@ -16,13 +13,8 @@ class LoggingConfig {
     }
 
     public static void initializeLogging() {
-        initializeLogging("INFO")
-    }
-
-    public static void initializeLogging(String level) {
         BasicConfigurator.resetConfiguration();
         BasicConfigurator.configure();
-        Logger.getRootLogger().setLevel(Level.toLevel(level))
     }
 
 }

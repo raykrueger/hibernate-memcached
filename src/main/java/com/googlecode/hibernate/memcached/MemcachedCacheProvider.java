@@ -15,12 +15,12 @@
 package com.googlecode.hibernate.memcached;
 
 import net.spy.memcached.MemcachedClient;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.hibernate.cache.Cache;
 import org.hibernate.cache.CacheException;
 import org.hibernate.cache.CacheProvider;
 import org.hibernate.cache.Timestamper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Properties;
 
@@ -84,7 +84,7 @@ import java.util.Properties;
  */
 public class MemcachedCacheProvider implements CacheProvider {
 
-    private static final Log log = LogFactory.getLog(MemcachedCacheProvider.class);
+    private final Logger log = LoggerFactory.getLogger(MemcachedCacheProvider.class);
 
     private MemcachedClient client;
 
@@ -135,7 +135,7 @@ public class MemcachedCacheProvider implements CacheProvider {
         if (keyStrategyName != null) {
             KeyStrategy keyStrategy = instantiateKeyStrategy(keyStrategyName);
             cache.setKeyStrategy(keyStrategy);
-            log.debug("Using KeyStrategy instance: [" + keyStrategy + "]");
+            log.debug("Using KeyStrategy instance: [{}]", keyStrategy);
         }
     }
 

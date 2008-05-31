@@ -16,11 +16,11 @@ package com.googlecode.hibernate.memcached;
 
 import net.spy.memcached.MemcachedClient;
 import net.spy.memcached.OperationTimeoutException;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.hibernate.cache.Cache;
 import org.hibernate.cache.CacheException;
 import org.hibernate.cache.Timestamper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Map;
 
@@ -50,7 +50,7 @@ import java.util.Map;
  */
 public class MemcachedCache implements Cache {
 
-    private static final Log log = LogFactory.getLog(MemcachedCache.class);
+    private final Logger log = LoggerFactory.getLogger(MemcachedCache.class);
 
     private final String regionName;
     private final MemcachedClient memcachedClient;
@@ -83,7 +83,7 @@ public class MemcachedCache implements Cache {
 
     private Object memcacheGet(Object key) {
         String stringKey = toKey(key);
-        log.debug("Memcache.get(" + stringKey + "}");
+        log.debug("Memcache.get({}}", stringKey);
         try {
             return memcachedClient.get(stringKey);
         } catch (OperationTimeoutException e) {
@@ -94,7 +94,7 @@ public class MemcachedCache implements Cache {
 
     private void memcacheSet(Object key, Object o) {
         String stringKey = toKey(key);
-        log.debug("Memcache.set(" + stringKey + "}");
+        log.debug("Memcache.set({})", stringKey);
         memcachedClient.set(stringKey, cacheTimeSeconds, o);
     }
 

@@ -1,7 +1,7 @@
 package com.googlecode.hibernate.memcached;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.UUID;
 
@@ -17,15 +17,13 @@ import java.util.UUID;
  */
 public class UUIDKeyStrategy extends AbstractKeyStrategy {
 
-    private static final Log log = LogFactory.getLog(UUIDKeyStrategy.class);
+    private final Logger log = LoggerFactory.getLogger(UUIDKeyStrategy.class);
 
     public String toKey(String regionName, long clearIndex, Object key) {
         String keyString = convertKeyToString(regionName, clearIndex, key);
         String uuidString = UUID.nameUUIDFromBytes(keyString.getBytes()).toString();
 
-        if (log.isDebugEnabled()) {
-            log.debug("Converted keyString [" + keyString + "] to uuidString [" + uuidString + "]");
-        }
+        log.debug("Converted keyString [{}] to uuidString [{}]", keyString, uuidString);
 
         return uuidString;
     }
