@@ -14,7 +14,6 @@
  */
 package com.googlecode.hibernate.memcached;
 
-import net.spy.memcached.AddrUtil;
 import net.spy.memcached.MemcachedClient;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -23,7 +22,6 @@ import org.hibernate.cache.CacheException;
 import org.hibernate.cache.CacheProvider;
 import org.hibernate.cache.Timestamper;
 
-import java.io.IOException;
 import java.util.Properties;
 
 /**
@@ -43,6 +41,20 @@ import java.util.Properties;
  * <tr><td>hibernate.memcached.keyStrategy</td><td>{@link DefaultKeyStrategy}</td>
  * <td>Sets the strategy class to to use for generating cache keys.
  * Must provide a class name that implements {@link com.googlecode.hibernate.memcached.KeyStrategy}</td></tr>
+ * <tr><td>hibernate.memcached.readBufferSize</td>
+ * <td>{@link net.spy.memcached.DefaultConnectionFactory#DEFAULT_READ_BUFFER_SIZE}</td>
+ * <td>The read buffer size for each server connection from this factory</td></tr>
+ * <tr><td>hibernate.memcached.operationQueueLength</td>
+ * <td>{@link net.spy.memcached.DefaultConnectionFactory#DEFAULT_OP_QUEUE_LEN}</td>
+ * <td>Maximum length of the operation queue returned by this connection factory</td></tr>
+ * <tr><td>hibernate.memcached.operationTimeout</td>
+ * <td>{@link net.spy.memcached.DefaultConnectionFactory#DEFAULT_OPERATION_TIMEOUT}</td>
+ * <td>Default operation timeout in milliseconds</td></tr>
+ * <tr><td>hibernate.memcached.hashAlgorithm</td><td>{@link net.spy.memcached.HashAlgorithm#KETAMA_HASH}</td>
+ * <td>Which hash algorithm to use when adding items to the cache.<br/>
+ * <b>Note:</b> the MemcachedClient defaults to using
+ * {@link net.spy.memcached.HashAlgorithm#NATIVE_HASH}, while the hibernate-memcached cache defaults to KETAMA_HASH
+ * for "consistent hashing"</td></tr>
  * <tr><td>hibernate.memcached.clearSupported</td><td>false</td>
  * <td>Enables support for the {@link MemcachedCache#clear()} method for all cache regions.
  * The way clear is implemented for memcached is expensive and adds overhead to all get/set operations.
@@ -56,8 +68,11 @@ import java.util.Properties;
  * <table border='1'>
  * <tr><th>Property</th><th>Default</th><th>Description</th></tr>
  * <tr><td>hibernate.memcached.[region-name].cacheTimeSeconds</td>
- * <td>none see hibernate.memcached.cacheTimeSeconds</td>
+ * <td>none, see hibernate.memcached.cacheTimeSeconds</td>
  * <td>Set the cache time for this cache region, overriding the cache-wide setting.</td></tr>
+ * <tr><td>hibernate.memcached.[region-name].keyStrategy</td><td>none, see hibernate.memcached.keyStrategy</td>
+ * <td>Overrides the strategy class to to use for generating cache keys in this cache region.
+ * Must provide a class name that implements {@link com.googlecode.hibernate.memcached.KeyStrategy}</td></tr>
  * <tr><td>hibernate.memcached.[region-name].clearSupported</td>
  * <td>none, see hibernate.memcached.clearSupported</td>
  * <td>Enables clear() operations for this cache region only.
@@ -72,21 +87,23 @@ public class MemcachedCacheProvider implements CacheProvider {
     private static final Log log = LogFactory.getLog(MemcachedCacheProvider.class);
 
     private MemcachedClient client;
+
     public static final int DEFAULT_CACHE_TIME_SECONDS = 300;
     public static final boolean DEFAULT_CLEAR_SUPPORTED = false;
 
     public static final String PROP_PREFIX = "hibernate.memcached.";
-    public static final String PROP_SERVERS = PROP_PREFIX + "servers";
 
     public Cache buildCache(String regionName, Properties properties) throws CacheException {
+
         MemcachedCache cache = new MemcachedCache(regionName, client);
 
         int defaultCacheTimeSeconds = getDefaultCacheTimeSeconds(properties);
         boolean defaultClearSupported = getDefaultClearSupported(properties);
 
-        setKeyStrategy(properties, cache);
-
         String regionPrefix = PROP_PREFIX + regionName + ".";
+
+        String keyStrategy = getKeyStrategyName(properties, regionPrefix);
+        setKeyStrategy(keyStrategy, cache);
 
         String propCacheTimeSeconds = regionPrefix + "cacheTimeSeconds";
         if (properties.containsKey(propCacheTimeSeconds)) {
@@ -105,11 +122,18 @@ public class MemcachedCacheProvider implements CacheProvider {
         return cache;
     }
 
-    private void setKeyStrategy(Properties properties, MemcachedCache cache) {
-        String keyStrategyClassProp =
-                properties.getProperty(PROP_PREFIX + "keyStrategy");
-        if (keyStrategyClassProp != null) {
-            KeyStrategy keyStrategy = instantiateKeyStrategy(keyStrategyClassProp);
+    private String getKeyStrategyName(Properties properties, String regionPrefix) {
+        String keyStrategy = properties.getProperty(PROP_PREFIX + "keyStrategy");
+        if (keyStrategy == null) {
+            keyStrategy = properties.getProperty(regionPrefix + "keyStrategy");
+        }
+        return keyStrategy;
+    }
+
+    private void setKeyStrategy(String keyStrategyName, MemcachedCache cache) {
+
+        if (keyStrategyName != null) {
+            KeyStrategy keyStrategy = instantiateKeyStrategy(keyStrategyName);
             cache.setKeyStrategy(keyStrategy);
             log.debug("Using KeyStrategy instance: [" + keyStrategy + "]");
         }
@@ -157,29 +181,15 @@ public class MemcachedCacheProvider implements CacheProvider {
     }
 
     public void start(Properties properties) throws CacheException {
-        String serverList = properties.getProperty(PROP_SERVERS, "localhost:11211");
-
-        if (log.isDebugEnabled()) {
-            log.debug("Starting MemcachedClient with serverList [" + serverList + "]");
-        }
-
         try {
-            client = createMemcachedClient(serverList, properties);
-        } catch (IOException e) {
-            throw new CacheException("Unable to initialize MemcachedClient using serverList [" + serverList + "]");
+            client = getMemcachedClientFactory(properties).createMemcachedClient();
+        } catch (Exception e) {
+            throw new CacheException("Unable to initialize MemcachedClient", e);
         }
     }
 
-    /**
-     * Given the serverList and access to the cache properties, create the MemcachedClient to use.
-     *
-     * @param serverList space delimeted serverlist container host and port. Ex:"host:11211 otherhost:11211"
-     * @param properties Properties from {@link #start(java.util.Properties)}
-     * @return MemcachedClient
-     * @throws IOException if the MemcachedClient throws it
-     */
-    protected MemcachedClient createMemcachedClient(String serverList, Properties properties) throws IOException {
-        return new MemcachedClient(AddrUtil.getAddresses(serverList));
+    protected MemcachedClientFactory getMemcachedClientFactory(Properties properties) {
+        return new DefaultMemcachedClientFactory(properties);
     }
 
     public void stop() {
@@ -190,6 +200,11 @@ public class MemcachedCacheProvider implements CacheProvider {
         client = null;
     }
 
+    /**
+     * Oh look, another ridiculous method with no explanation from Hibernate
+     *
+     * @return false
+     */
     public boolean isMinimalPutsEnabledByDefault() {
         return false;
     }

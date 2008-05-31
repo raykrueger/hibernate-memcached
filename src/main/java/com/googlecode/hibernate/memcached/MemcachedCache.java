@@ -62,7 +62,7 @@ public class MemcachedCache implements Cache {
     public MemcachedCache(String regionName, MemcachedClient memcachedClient) {
         this.regionName = (regionName != null) ? regionName : "default";
         this.memcachedClient = memcachedClient;
-        clearIndexKey = this.regionName.replace(' ', '_') + ":index_key";
+        clearIndexKey = this.regionName.replaceAll("\\s", "") + ":index_key";
     }
 
     public int getCacheTimeSeconds() {
