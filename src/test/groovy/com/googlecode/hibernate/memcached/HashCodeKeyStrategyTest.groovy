@@ -21,7 +21,7 @@ class HashCodeKeyStrategyTest extends BaseTestCase {
 
     void test_null_key_does_not_validate() {
         shouldFailWithCause(IllegalArgumentException.class) {
-            String key = strategy.toKey(null, 0, null)
+            strategy.toKey(null, 0, null)
         }
     }
 
@@ -33,9 +33,7 @@ class HashCodeKeyStrategyTest extends BaseTestCase {
     void test_really_long_keys_get_truncated() {
         String regionName = ""
 
-        250.times {
-            regionName += "x"
-        }
+        250.times {regionName += "x"}
 
         assertEquals("1389003178", strategy.toKey(regionName, 0, "blah blah blah"))
     }

@@ -95,6 +95,8 @@ public class MemcachedCacheProvider implements CacheProvider {
 
     public Cache buildCache(String regionName, Properties properties) throws CacheException {
 
+        log.info("Building cache for region [{}]", regionName);
+
         MemcachedCache cache = new MemcachedCache(regionName, client);
 
         int defaultCacheTimeSeconds = getDefaultCacheTimeSeconds(properties);
@@ -103,7 +105,9 @@ public class MemcachedCacheProvider implements CacheProvider {
         String regionPrefix = PROP_PREFIX + regionName + ".";
 
         String keyStrategy = getKeyStrategyName(properties, regionPrefix);
-        setKeyStrategy(keyStrategy, cache);
+        if (keyStrategy != null) {
+            setKeyStrategy(keyStrategy, cache);
+        }
 
         String propCacheTimeSeconds = regionPrefix + "cacheTimeSeconds";
         if (properties.containsKey(propCacheTimeSeconds)) {
@@ -131,12 +135,9 @@ public class MemcachedCacheProvider implements CacheProvider {
     }
 
     private void setKeyStrategy(String keyStrategyName, MemcachedCache cache) {
-
-        if (keyStrategyName != null) {
-            KeyStrategy keyStrategy = instantiateKeyStrategy(keyStrategyName);
-            cache.setKeyStrategy(keyStrategy);
-            log.debug("Using KeyStrategy instance: [{}]", keyStrategy);
-        }
+        log.debug("Using KeyStrategy: [{}]", keyStrategyName);
+        KeyStrategy keyStrategy = instantiateKeyStrategy(keyStrategyName);
+        cache.setKeyStrategy(keyStrategy);
     }
 
     protected KeyStrategy instantiateKeyStrategy(String cls) {
@@ -181,6 +182,7 @@ public class MemcachedCacheProvider implements CacheProvider {
     }
 
     public void start(Properties properties) throws CacheException {
+        log.info("Starting MemcachedClient...");
         try {
             client = getMemcachedClientFactory(properties).createMemcachedClient();
         } catch (Exception e) {
