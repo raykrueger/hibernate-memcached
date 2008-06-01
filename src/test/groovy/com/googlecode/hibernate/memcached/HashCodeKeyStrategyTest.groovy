@@ -35,7 +35,7 @@ class HashCodeKeyStrategyTest extends BaseTestCase {
 
         250.times {regionName += "x"}
 
-        assertEquals("1389003178", strategy.toKey(regionName, 0, "blah blah blah"))
+        assertEquals("e2e82011-e3d5-3dd6-be56-4fdcb72a8d64", strategy.toKey(regionName, 0, "blah blah blah"))
     }
 
 }
