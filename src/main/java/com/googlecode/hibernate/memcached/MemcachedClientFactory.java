@@ -3,7 +3,7 @@ package com.googlecode.hibernate.memcached;
 import net.spy.memcached.MemcachedClient;
 
 /**
- * DOCUMENT ME!
+ * Simple interface used to abstract the creation of the MemcachedClient
  *
  * @author Ray Krueger
  */
