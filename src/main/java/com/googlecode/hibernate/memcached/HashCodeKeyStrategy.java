@@ -7,10 +7,10 @@ package com.googlecode.hibernate.memcached;
  */
 public class HashCodeKeyStrategy extends AbstractKeyStrategy {
 
-    protected Object transformKeyObject(Object key) {
+    protected String transformKeyObject(Object key) {
         int hashCode = key.hashCode();
         log.debug("Transformed key [{}] to hashCode [{}]", key, key.hashCode());
-        return hashCode;
+        return String.valueOf(hashCode);
     }
 
 }

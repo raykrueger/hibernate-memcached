@@ -3,6 +3,7 @@ package com.googlecode.hibernate.memcached;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.UUID;
 import java.util.regex.Pattern;
 
 /**
@@ -41,12 +42,12 @@ public abstract class AbstractKeyStrategy implements KeyStrategy {
         return finalKey;
     }
 
-    protected abstract Object transformKeyObject(Object key);
+    protected abstract String transformKeyObject(Object key);
 
     protected String truncateKey(String key) {
-        String keyHashCode = String.valueOf(key.hashCode());
+        String keyHashCode = UUID.nameUUIDFromBytes(key.getBytes()).toString();
 
-        log.warn("Truncated key [{}] to hashCode [{}]. " +
+        log.warn("Encoded key [{}] to uuid [{}]. " +
                 "Be sure to set cache region names whenever possible as the names Hibernate generates are really long.",
                 key, keyHashCode
         );

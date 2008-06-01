@@ -7,7 +7,7 @@ package com.googlecode.hibernate.memcached;
  */
 public class StringKeyStrategy extends AbstractKeyStrategy {
 
-    protected Object transformKeyObject(Object key) {
+    protected String transformKeyObject(Object key) {
         String stringKey = String.valueOf(key);
         log.debug("Transformed key [{}] to string [{}]", key, stringKey);
         return stringKey;
