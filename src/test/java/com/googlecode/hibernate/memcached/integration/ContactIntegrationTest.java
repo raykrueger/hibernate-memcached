@@ -1,5 +1,6 @@
 package com.googlecode.hibernate.memcached.integration;
 
+import org.hibernate.Criteria;
 import static org.hibernate.criterion.Restrictions.*;
 
 import java.util.Properties;
@@ -20,7 +21,6 @@ public class ContactIntegrationTest extends AbstractHibernateTestCase {
     protected Properties getConfigProperties() {
         Properties props = new Properties();
         props.setProperty("hibernate.cache.use_query_cache", "true");
-        //props.setProperty("hibernate.memcached.keyStrategy", UUIDKeyStrategy.class.getName())
         return props;
     }
 
@@ -30,13 +30,18 @@ public class ContactIntegrationTest extends AbstractHibernateTestCase {
     }
 
     public void test_query_cache() {
-        Contact fromDB = (Contact) session.createCriteria(Contact.class)
+        Criteria criteria = session.createCriteria(Contact.class)
                 .add(eq("firstName", "Ray"))
                 .add(eq("lastName", "Krueger"))
                 .setCacheable(true)
-                .setCacheRegion("contact.findByFirstNameAndLastName")
-                .uniqueResult();
-        assertEquals(ray, fromDB);
+                .setCacheRegion("contact.findByFirstNameAndLastName");
+
+        criteria.uniqueResult();
+        criteria.uniqueResult();
+        criteria.uniqueResult();
+        criteria.uniqueResult();
+
+        assertEquals(criteria.uniqueResult(), criteria.uniqueResult());
     }
 
 }

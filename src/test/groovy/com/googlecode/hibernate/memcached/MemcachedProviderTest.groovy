@@ -22,7 +22,7 @@ class MemcachedProviderTest extends BaseTestCase {
         //assert Defaults
         assertFalse(cache.isClearSupported())
         assertEquals(300, cache.getCacheTimeSeconds())
-        assertEquals DefaultKeyStrategy.class, cache.getKeyStrategy().class
+        assertEquals HashCodeKeyStrategy.class, cache.getKeyStrategy().class
     }
 
     void test_region_properties() {
@@ -31,7 +31,7 @@ class MemcachedProviderTest extends BaseTestCase {
         properties.setProperty "hibernate.memcached.serverList", "127.0.0.1:11211"
         properties.setProperty "hibernate.memcached.test.cacheTimeSeconds", "500"
         properties.setProperty "hibernate.memcached.test.clearSupported", "true"
-        properties.setProperty "hibernate.memcached.test.keyStrategy", UUIDKeyStrategy.class.getName()
+        properties.setProperty "hibernate.memcached.test.keyStrategy", StringKeyStrategy.class.getName()
 
         provider.start(properties)
         MemcachedCache cache = (MemcachedCache) provider.buildCache("test", properties)
@@ -40,13 +40,13 @@ class MemcachedProviderTest extends BaseTestCase {
         //assert Defaults
         assertTrue(cache.isClearSupported())
         assertEquals(500, cache.getCacheTimeSeconds())
-        assertEquals(UUIDKeyStrategy.class, cache.getKeyStrategy().class)
+        assertEquals(StringKeyStrategy.class, cache.getKeyStrategy().class)
     }
 
-    void test_uuid_key_strategy() {
+    void test_string_key_strategy() {
         Properties properties = new Properties()
 
-        properties.setProperty("hibernate.memcached.keyStrategy", UUIDKeyStrategy.class.getName())
+        properties.setProperty("hibernate.memcached.keyStrategy", StringKeyStrategy.class.getName())
 
         provider.start(properties)
         MemcachedCache cache = (MemcachedCache) provider.buildCache("test", properties)

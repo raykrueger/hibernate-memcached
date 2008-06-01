@@ -57,7 +57,7 @@ public class MemcachedCache implements Cache {
     private final String clearIndexKey;
     private int cacheTimeSeconds = 300;
     private boolean clearSupported = false;
-    private KeyStrategy keyStrategy = new DefaultKeyStrategy();
+    private KeyStrategy keyStrategy = new HashCodeKeyStrategy();
 
     public MemcachedCache(String regionName, MemcachedClient memcachedClient) {
         this.regionName = (regionName != null) ? regionName : "default";
@@ -115,7 +115,7 @@ public class MemcachedCache implements Cache {
     }
 
     public void update(Object key, Object value) throws CacheException {
-        memcacheSet(key, value);
+        put(key, value);
     }
 
     public void remove(Object key) throws CacheException {
