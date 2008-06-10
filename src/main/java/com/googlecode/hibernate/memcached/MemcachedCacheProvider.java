@@ -203,11 +203,11 @@ public class MemcachedCacheProvider implements CacheProvider {
     }
 
     /**
-     * Oh look, another ridiculous method with no explanation from Hibernate
+     * According to the hibernate reference docs, MinimalPutsEnabledByDefault should be true for distributed caches.
      *
-     * @return false
+     * @return true
      */
     public boolean isMinimalPutsEnabledByDefault() {
-        return false;
+        return true;
     }
 }
