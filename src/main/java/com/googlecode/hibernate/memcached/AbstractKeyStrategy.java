@@ -1,9 +1,9 @@
 package com.googlecode.hibernate.memcached;
 
+import org.apache.commons.codec.digest.DigestUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.UUID;
 import java.util.regex.Pattern;
 
 /**
@@ -45,7 +45,8 @@ public abstract class AbstractKeyStrategy implements KeyStrategy {
     protected abstract String transformKeyObject(Object key);
 
     protected String truncateKey(String key) {
-        String keyHashCode = UUID.nameUUIDFromBytes(key.getBytes()).toString();
+
+        String keyHashCode = DigestUtils.md5Hex(key.getBytes());
 
         log.warn("Encoded key [{}] to uuid [{}]. " +
                 "Be sure to set cache region names whenever possible as the names Hibernate generates are really long.",

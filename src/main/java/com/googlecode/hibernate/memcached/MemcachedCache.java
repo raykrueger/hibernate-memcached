@@ -18,7 +18,6 @@ import net.spy.memcached.MemcachedClient;
 import net.spy.memcached.OperationTimeoutException;
 import org.hibernate.cache.Cache;
 import org.hibernate.cache.CacheException;
-import org.hibernate.cache.Timestamper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -146,7 +145,7 @@ public class MemcachedCache implements Cache {
     }
 
     public long nextTimestamp() {
-        return Timestamper.next();
+        return System.currentTimeMillis() / 100;
     }
 
     public int getTimeout() {
