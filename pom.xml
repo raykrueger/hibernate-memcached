@@ -1,10 +1,9 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.googlecode</groupId>
     <artifactId>hibernate-memcached</artifactId>
     <packaging>jar</packaging>
-    <version>0.6-SNAPSHOT</version>
+    <version>0.6</version>
     <name>hibernate-memcached</name>
     <url>http://code.google.com/p/hibernate-memcached/</url>
 
@@ -38,9 +37,9 @@
     </repositories>
 
     <scm>
-        <connection>scm:svn:http://hibernate-memcached.googlecode.com/svn/trunk</connection>
-        <developerConnection>scm:svn:https://hibernate-memcached.googlecode.com/svn/trunk</developerConnection>
-        <url>http://code.google.com/p/hibernate-memcached/source/browse</url>
+        <connection>scm:svn:http://hibernate-memcached.googlecode.com/svn/tags/hibernate-memcached-0.6</connection>
+        <developerConnection>scm:svn:https://hibernate-memcached.googlecode.com/svn/tags/hibernate-memcached-0.6</developerConnection>
+        <url>http://code.google.com/p/hibernate-memcached/source/browse/tags/hibernate-memcached-0.6</url>
     </scm>
 
     <distributionManagement>
