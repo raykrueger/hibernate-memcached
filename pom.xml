@@ -51,15 +51,15 @@
     <distributionManagement>
         <!-- use the following if you're not using a snapshot version. -->
         <repository>
+            <uniqueVersion>false</uniqueVersion>
             <id>googlecode</id>
-            <name>Repository Name</name>
             <url>svn:https://raykrueger.googlecode.com/svn/repository</url>
             <!--<url>file://distribution</url>-->
         </repository>
         <!-- use the following if you ARE using a snapshot version. -->
         <snapshotRepository>
+            <uniqueVersion>false</uniqueVersion>
             <id>googlecode</id>
-            <name>Repository Name</name>
             <url>svn:https://raykrueger.googlecode.com/svn/repository</url>
             <!--<url>file://distribution</url>-->
         </snapshotRepository>
