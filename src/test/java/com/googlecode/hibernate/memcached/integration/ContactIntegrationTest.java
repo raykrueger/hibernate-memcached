@@ -64,7 +64,7 @@ public class ContactIntegrationTest extends AbstractHibernateTestCase {
                 .add(eq("lastName", "Krueger"))
                 .add(eq("birthday", birthday.getTime()))
                 .setCacheable(true)
-                .setCacheRegion("contact.findByFirstNameAndLastName");
+                .setCacheRegion("contact.findByFirstNameAndLastNameAndBirthday");
 
         assertNotNull(criteria.uniqueResult());
         criteria.uniqueResult();
