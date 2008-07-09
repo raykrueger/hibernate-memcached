@@ -1,8 +1,10 @@
 package com.googlecode.hibernate.memcached.integration;
 
 import org.hibernate.Criteria;
-import static org.hibernate.criterion.Restrictions.*;
+import static org.hibernate.criterion.Restrictions.eq;
 
+import java.util.Calendar;
+import java.util.Date;
 import java.util.Properties;
 
 public class ContactIntegrationTest extends AbstractHibernateTestCase {
@@ -10,9 +12,11 @@ public class ContactIntegrationTest extends AbstractHibernateTestCase {
     Contact ray;
 
     protected void setupInTransaction() {
+
         ray = new Contact();
         ray.setFirstName("Ray");
         ray.setLastName("Krueger");
+        ray.setBirthday(new Date());
         session.saveOrUpdate(ray);
         session.flush();
         session.clear();
@@ -36,6 +40,8 @@ public class ContactIntegrationTest extends AbstractHibernateTestCase {
                 .setCacheable(true)
                 .setCacheRegion("contact.findByFirstNameAndLastName");
 
+        assertNotNull(criteria.uniqueResult());
+
         criteria.uniqueResult();
         criteria.uniqueResult();
         criteria.uniqueResult();
@@ -44,4 +50,27 @@ public class ContactIntegrationTest extends AbstractHibernateTestCase {
         assertEquals(criteria.uniqueResult(), criteria.uniqueResult());
     }
 
+    public void test_query_cache_with_date() throws Exception {
+
+        Thread.sleep(3000);
+        Calendar birthday = Calendar.getInstance();
+        birthday.set(Calendar.HOUR_OF_DAY, 0);
+        birthday.set(Calendar.MINUTE, 0);
+        birthday.set(Calendar.SECOND, 0);
+        birthday.set(Calendar.MILLISECOND, 0);
+
+        Criteria criteria = session.createCriteria(Contact.class)
+                .add(eq("firstName", "Ray"))
+                .add(eq("lastName", "Krueger"))
+                .add(eq("birthday", birthday.getTime()))
+                .setCacheable(true)
+                .setCacheRegion("contact.findByFirstNameAndLastName");
+
+        assertNotNull(criteria.uniqueResult());
+        criteria.uniqueResult();
+        criteria.uniqueResult();
+        criteria.uniqueResult();
+
+        assertEquals(criteria.uniqueResult(), criteria.uniqueResult());
+    }
 }

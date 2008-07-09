@@ -2,10 +2,12 @@ package com.googlecode.hibernate.memcached.integration;
 
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
+import org.hibernate.annotations.Type;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import java.util.Date;
 
 
 /**
@@ -22,6 +24,9 @@ public class Contact {
     String firstName;
 
     String lastName;
+
+    @Type(type = "date")
+    Date birthday;
 
     Long getId() {
         return id;
@@ -45,6 +50,14 @@ public class Contact {
 
     void setLastName(String lastName) {
         this.lastName = lastName;
+    }
+
+    public Date getBirthday() {
+        return birthday;
+    }
+
+    public void setBirthday(Date birthday) {
+        this.birthday = birthday;
     }
 
     public boolean equals(Object o) {
