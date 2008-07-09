@@ -7,11 +7,21 @@ package com.googlecode.hibernate.memcached
  */
 class StringKeyStrategyTest extends BaseTestCase {
 
-    StringKeyStrategy strategy = new StringKeyStrategy()
+    StringKeyStrategy strategy
+
+    protected void setUp() {
+        strategy = new StringKeyStrategy()
+    }
 
     void test() {
         String key = strategy.toKey("test", 0, "boing")
         assertEquals("test:0:boing", key)
+    }
+
+    void test_config() {
+        assertEquals(StringKeyStrategy.DEFAULT_MAX_KEY_LENGTH, strategy.maxKeyLength)
+        strategy.maxKeyLength = 1
+        assertEquals(1, strategy.maxKeyLength)
     }
 
     void test_null_region() {
