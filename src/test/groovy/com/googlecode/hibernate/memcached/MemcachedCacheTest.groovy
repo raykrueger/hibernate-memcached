@@ -3,10 +3,11 @@ package com.googlecode.hibernate.memcached
 import net.spy.memcached.AddrUtil
 import net.spy.memcached.MemcachedClient
 
+
 /**
-* DOCUMENT ME!
-* @author Ray Krueger
-*/
+ * DOCUMENT ME!
+ * @author Ray Krueger
+ */
 class MemcachedCacheTest extends BaseTestCase {
 
     MemcachedCache cache

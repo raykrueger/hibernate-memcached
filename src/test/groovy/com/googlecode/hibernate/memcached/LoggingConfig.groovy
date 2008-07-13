@@ -3,9 +3,9 @@ package com.googlecode.hibernate.memcached
 import org.apache.log4j.BasicConfigurator
 
 /**
-* DOCUMENT ME!
-* @author Ray Krueger
-*/
+ * DOCUMENT ME!
+ * @author Ray Krueger
+ */
 class LoggingConfig {
 
     static {
