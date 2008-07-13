@@ -18,7 +18,6 @@ import net.spy.memcached.MemcachedClient;
 import org.hibernate.cache.Cache;
 import org.hibernate.cache.CacheException;
 import org.hibernate.cache.CacheProvider;
-import org.hibernate.cache.Timestamper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -92,46 +91,40 @@ public class MemcachedCacheProvider implements CacheProvider {
     public static final boolean DEFAULT_CLEAR_SUPPORTED = false;
 
     public static final String PROP_PREFIX = "hibernate.memcached.";
+    public static final String PROP_CACHE_TIME_SECONDS = PROP_PREFIX + "cacheTimeSeconds";
+    public static final String PROP_CLEAR_SUPPORTED = PROP_PREFIX + "clearSupported";
 
     public Cache buildCache(String regionName, Properties properties) throws CacheException {
+
+        PropertiesHelper props = new PropertiesHelper(properties);
 
         log.info("Building cache for region [{}]", regionName);
 
         MemcachedCache cache = new MemcachedCache(regionName, client);
 
-        int defaultCacheTimeSeconds = getDefaultCacheTimeSeconds(properties);
-        boolean defaultClearSupported = getDefaultClearSupported(properties);
+        int defaultCacheTimeSeconds = getDefaultCacheTimeSeconds(props);
+        boolean defaultClearSupported = getDefaultClearSupported(props);
 
         String regionPrefix = PROP_PREFIX + regionName + ".";
 
-        String keyStrategy = getKeyStrategyName(properties, regionPrefix);
+        String keyStrategy = getKeyStrategyName(props, regionPrefix);
         if (keyStrategy != null) {
             setKeyStrategy(keyStrategy, cache);
         }
 
-        String propCacheTimeSeconds = regionPrefix + "cacheTimeSeconds";
-        if (properties.containsKey(propCacheTimeSeconds)) {
-            cache.setCacheTimeSeconds(Integer.valueOf(properties.getProperty(propCacheTimeSeconds)));
-        } else {
-            cache.setCacheTimeSeconds(defaultCacheTimeSeconds);
-        }
+        int cacheTime = props.getInt(regionPrefix + "cacheTimeSeconds",
+                defaultCacheTimeSeconds);
+        cache.setCacheTimeSeconds(cacheTime);
 
-        String propClearSupported = regionPrefix + "clearSupported";
-        if (properties.containsKey(propClearSupported)) {
-            cache.setClearSupported(Boolean.valueOf(properties.getProperty(propClearSupported)));
-        } else {
-            cache.setClearSupported(defaultClearSupported);
-        }
+        boolean clearSupported = props.getBoolean(regionPrefix + "clearSupported",
+                defaultClearSupported);
+        cache.setClearSupported(clearSupported);
 
         return cache;
     }
 
-    private String getKeyStrategyName(Properties properties, String regionPrefix) {
-        String keyStrategy = properties.getProperty(PROP_PREFIX + "keyStrategy");
-        if (keyStrategy == null) {
-            keyStrategy = properties.getProperty(regionPrefix + "keyStrategy");
-        }
-        return keyStrategy;
+    private String getKeyStrategyName(PropertiesHelper properties, String regionPrefix) {
+        return properties.findValue(PROP_PREFIX + "keyStrategy", regionPrefix + "keyStrategy");
     }
 
     private void setKeyStrategy(String keyStrategyName, MemcachedCache cache) {
@@ -152,24 +145,12 @@ public class MemcachedCacheProvider implements CacheProvider {
         }
     }
 
-    private boolean getDefaultClearSupported(Properties properties) {
-        boolean defaultClearSupported = DEFAULT_CLEAR_SUPPORTED;
-        String defaultClearSupportedProp =
-                properties.getProperty(PROP_PREFIX + "clearSupported");
-        if (defaultClearSupportedProp != null) {
-            defaultClearSupported = Boolean.parseBoolean(defaultClearSupportedProp);
-        }
-        return defaultClearSupported;
+    private boolean getDefaultClearSupported(PropertiesHelper properties) {
+        return properties.getBoolean(PROP_CLEAR_SUPPORTED, DEFAULT_CLEAR_SUPPORTED);
     }
 
-    private int getDefaultCacheTimeSeconds(Properties properties) {
-        int defaultCacheTimeSeconds = DEFAULT_CACHE_TIME_SECONDS;
-        String defaultCacheTimeSecondsProp =
-                properties.getProperty(PROP_PREFIX + "cacheTimeSeconds");
-        if (defaultCacheTimeSecondsProp != null) {
-            defaultCacheTimeSeconds = Integer.parseInt(defaultCacheTimeSecondsProp);
-        }
-        return defaultCacheTimeSeconds;
+    private int getDefaultCacheTimeSeconds(PropertiesHelper props) {
+        return props.getInt(PROP_CACHE_TIME_SECONDS, DEFAULT_CACHE_TIME_SECONDS);
     }
 
     /**
@@ -178,7 +159,7 @@ public class MemcachedCacheProvider implements CacheProvider {
      * @return long {@link org.hibernate.cache.Timestamper#next()}
      */
     public long nextTimestamp() {
-        return Timestamper.next();
+        return System.currentTimeMillis() / 100;
     }
 
     public void start(Properties properties) throws CacheException {

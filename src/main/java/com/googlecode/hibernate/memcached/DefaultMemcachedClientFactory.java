@@ -21,10 +21,10 @@ public class DefaultMemcachedClientFactory implements MemcachedClientFactory {
     public static final String PROP_READ_BUFFER_SIZE = PROP_PREFIX + "readBufferSize";
     public static final String PROP_OPERATION_TIMEOUT = PROP_PREFIX + "operationTimeout";
     public static final String PROP_HASH_ALGORITHM = PROP_PREFIX + "hashAlgorithm";
-    private final Properties properties;
+    private final PropertiesHelper properties;
 
     public DefaultMemcachedClientFactory(Properties properties) {
-        this.properties = properties;
+        this.properties = new PropertiesHelper(properties);
     }
 
     public MemcachedClient createMemcachedClient() throws Exception {
@@ -44,39 +44,27 @@ public class DefaultMemcachedClientFactory implements MemcachedClientFactory {
     }
 
     public String getServerList() {
-        return properties.getProperty(PROP_SERVERS, "localhost:11211");
-    }
-
-    private int getPropertyAsInt(String property, int defaultValue) {
-        String val = properties.getProperty(property);
-        if (val != null) {
-            return Integer.parseInt(val);
-        }
-        return defaultValue;
+        return properties.get(PROP_SERVERS, "localhost:11211");
     }
 
     public int getOperationQueueLength() {
-        return getPropertyAsInt(PROP_OPERATION_QUEUE_LENGTH, DefaultConnectionFactory.DEFAULT_OP_QUEUE_LEN);
+        return properties.getInt(PROP_OPERATION_QUEUE_LENGTH,
+                DefaultConnectionFactory.DEFAULT_OP_QUEUE_LEN);
     }
 
     public int getReadBufferSize() {
-        return getPropertyAsInt(PROP_READ_BUFFER_SIZE, DefaultConnectionFactory.DEFAULT_READ_BUFFER_SIZE);
+        return properties.getInt(PROP_READ_BUFFER_SIZE,
+                DefaultConnectionFactory.DEFAULT_READ_BUFFER_SIZE);
     }
 
     public long getOperationTimeoutMillis() {
-        String val = properties.getProperty(PROP_OPERATION_TIMEOUT);
-        if (val != null) {
-            return Long.parseLong(val);
-        }
-
-        return DefaultConnectionFactory.DEFAULT_OPERATION_TIMEOUT;
+        return properties.getLong(PROP_OPERATION_TIMEOUT,
+                DefaultConnectionFactory.DEFAULT_OPERATION_TIMEOUT);
     }
 
     public HashAlgorithm getHashAlgorithm() {
-        String val = properties.getProperty(PROP_HASH_ALGORITHM);
-        if (val != null) {
-            return HashAlgorithm.valueOf(val);
-        }
-        return HashAlgorithm.KETAMA_HASH;
+        return properties.getEnum(PROP_HASH_ALGORITHM,
+                HashAlgorithm.class,
+                HashAlgorithm.KETAMA_HASH);
     }
 }
