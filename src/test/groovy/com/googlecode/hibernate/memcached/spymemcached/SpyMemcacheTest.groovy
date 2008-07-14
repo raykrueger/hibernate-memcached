@@ -1,5 +1,8 @@
-package com.googlecode.hibernate.memcached
+package com.googlecode.hibernate.memcached.spymemcached
 
+import com.googlecode.hibernate.memcached.BaseTestCase
+import com.googlecode.hibernate.memcached.MemcachedCache
+import com.googlecode.hibernate.memcached.spymemcached.SpyMemcache
 import net.spy.memcached.AddrUtil
 import net.spy.memcached.MemcachedClient
 
@@ -8,14 +11,14 @@ import net.spy.memcached.MemcachedClient
  * DOCUMENT ME!
  * @author Ray Krueger
  */
-class MemcachedCacheTest extends BaseTestCase {
+class SpyMemcacheTest extends BaseTestCase {
 
     MemcachedCache cache
     MemcachedClient client
 
     protected void setUp() {
         client = new MemcachedClient(AddrUtil.getAddresses("localhost:11211"))
-        cache = new MemcachedCache("MemcachedCacheTest", client)
+        cache = new MemcachedCache("MemcachedCacheTest", new SpyMemcache(client))
     }
 
     protected void tearDown() {

@@ -1,19 +1,20 @@
-package com.googlecode.hibernate.memcached;
+package com.googlecode.hibernate.memcached.spymemcached;
 
+import com.googlecode.hibernate.memcached.Memcache;
+import com.googlecode.hibernate.memcached.MemcacheClientFactory;
+import com.googlecode.hibernate.memcached.PropertiesHelper;
 import net.spy.memcached.AddrUtil;
 import net.spy.memcached.DefaultConnectionFactory;
 import net.spy.memcached.HashAlgorithm;
 import net.spy.memcached.MemcachedClient;
 
-import java.util.Properties;
-
 /**
  * Parses hibernate properties to produce a MemcachedClient.<br/>
- * See {@link MemcachedCacheProvider} for property details.
+ * See {@link com.googlecode.hibernate.memcached.MemcachedCacheProvider} for property details.
  *
  * @author Ray Krueger
  */
-public class DefaultMemcachedClientFactory implements MemcachedClientFactory {
+public class SpyMemcacheClientFactory implements MemcacheClientFactory {
 
     private static final String PROP_PREFIX = "hibernate.memcached.";
     public static final String PROP_SERVERS = PROP_PREFIX + "servers";
@@ -23,11 +24,11 @@ public class DefaultMemcachedClientFactory implements MemcachedClientFactory {
     public static final String PROP_HASH_ALGORITHM = PROP_PREFIX + "hashAlgorithm";
     private final PropertiesHelper properties;
 
-    public DefaultMemcachedClientFactory(Properties properties) {
-        this.properties = new PropertiesHelper(properties);
+    public SpyMemcacheClientFactory(PropertiesHelper properties) {
+        this.properties = properties;
     }
 
-    public MemcachedClient createMemcachedClient() throws Exception {
+    public Memcache createMemcacheClient() throws Exception {
 
         DefaultConnectionFactory defaultConnectionFactory =
                 new DefaultConnectionFactory(
@@ -40,7 +41,8 @@ public class DefaultMemcachedClientFactory implements MemcachedClientFactory {
                     }
                 };
 
-        return new MemcachedClient(defaultConnectionFactory, AddrUtil.getAddresses(getServerList()));
+        MemcachedClient client = new MemcachedClient(defaultConnectionFactory, AddrUtil.getAddresses(getServerList()));
+        return new SpyMemcache(client);
     }
 
     public String getServerList() {

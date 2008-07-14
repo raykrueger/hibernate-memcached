@@ -14,13 +14,14 @@
  */
 package com.googlecode.hibernate.memcached;
 
-import net.spy.memcached.MemcachedClient;
 import org.hibernate.cache.Cache;
 import org.hibernate.cache.CacheException;
 import org.hibernate.cache.CacheProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.util.Properties;
 
 /**
@@ -85,14 +86,16 @@ public class MemcachedCacheProvider implements CacheProvider {
 
     private final Logger log = LoggerFactory.getLogger(MemcachedCacheProvider.class);
 
-    private MemcachedClient client;
+    private Memcache client;
 
     public static final int DEFAULT_CACHE_TIME_SECONDS = 300;
     public static final boolean DEFAULT_CLEAR_SUPPORTED = false;
+    public static final String DEFAULT_MEMCACHE_CLIENT_FACTORY = "com.googlecode.hibernate.memcached.spymemcached.SpyMemcacheClientFactory";
 
     public static final String PROP_PREFIX = "hibernate.memcached.";
     public static final String PROP_CACHE_TIME_SECONDS = PROP_PREFIX + "cacheTimeSeconds";
     public static final String PROP_CLEAR_SUPPORTED = PROP_PREFIX + "clearSupported";
+    public static final String PROP_MEMCACHE_CLIENT_FACTORY = PROP_PREFIX + "memcacheClientFactory";
 
     public Cache buildCache(String regionName, Properties properties) throws CacheException {
 
@@ -165,19 +168,49 @@ public class MemcachedCacheProvider implements CacheProvider {
     public void start(Properties properties) throws CacheException {
         log.info("Starting MemcachedClient...");
         try {
-            client = getMemcachedClientFactory(properties).createMemcachedClient();
+            client = getMemcachedClientFactory(new PropertiesHelper(properties))
+                    .createMemcacheClient();
         } catch (Exception e) {
             throw new CacheException("Unable to initialize MemcachedClient", e);
         }
     }
 
-    protected MemcachedClientFactory getMemcachedClientFactory(Properties properties) {
-        return new DefaultMemcachedClientFactory(properties);
+    protected MemcacheClientFactory getMemcachedClientFactory(PropertiesHelper properties) {
+        String factoryClassName = properties.get(PROP_MEMCACHE_CLIENT_FACTORY,
+                DEFAULT_MEMCACHE_CLIENT_FACTORY);
+
+        Constructor constructor;
+        try {
+            constructor = Class.forName(factoryClassName)
+                    .getConstructor(PropertiesHelper.class);
+        } catch (ClassNotFoundException e) {
+            throw new CacheException(
+                    "Unable to find factory class [" + factoryClassName + "]");
+        } catch (NoSuchMethodException e) {
+            throw new CacheException(
+                    "Unable to find PropertiesHelper constructor for factory class [" + factoryClassName + "]");
+        }
+
+        MemcacheClientFactory clientFactory;
+        try {
+            clientFactory = (MemcacheClientFactory) constructor.newInstance(properties);
+        } catch (InstantiationException e) {
+            throw new CacheException(
+                    "Unable to instantiate factory class [" + factoryClassName + "]");
+        } catch (IllegalAccessException e) {
+            throw new CacheException(
+                    "Unable to instantiate factory class [" + factoryClassName + "]");
+        } catch (InvocationTargetException e) {
+            throw new CacheException(
+                    "Unable to instantiate factory class [" + factoryClassName + "]");
+        }
+
+        return clientFactory;
     }
 
     public void stop() {
         if (client != null) {
-            log.debug("Shutting down MemcachedClient");
+            log.debug("Shutting down Memcache client");
             client.shutdown();
         }
         client = null;

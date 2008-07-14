@@ -1,16 +1,19 @@
-package com.googlecode.hibernate.memcached
+package com.googlecode.hibernate.memcached.spymemcached
 
+import com.googlecode.hibernate.memcached.BaseTestCase
+import com.googlecode.hibernate.memcached.Memcache
+import com.googlecode.hibernate.memcached.PropertiesHelper
+import com.googlecode.hibernate.memcached.spymemcached.SpyMemcacheClientFactory
 import net.spy.memcached.HashAlgorithm
-import net.spy.memcached.MemcachedClient
 
 
-class DefaultMemcachedClientFactoryTest extends BaseTestCase {
+class SpyMemcacheClientFactoryTest extends BaseTestCase {
 
-    MemcachedClient client
+    Memcache client
 
     void test_defaults() {
-        DefaultMemcachedClientFactory factory = new DefaultMemcachedClientFactory(new Properties())
-        client = factory.createMemcachedClient()
+        SpyMemcacheClientFactory factory = new SpyMemcacheClientFactory(new PropertiesHelper(new Properties()))
+        client = factory.createMemcacheClient()
         assert client
     }
 
@@ -23,8 +26,8 @@ class DefaultMemcachedClientFactoryTest extends BaseTestCase {
         properties.setProperty "hibernate.memcached.readBufferLength", "8192"
         properties.setProperty "hibernate.memcached.operationTimeout", "5000"
 
-        DefaultMemcachedClientFactory factory = new DefaultMemcachedClientFactory(properties)
-        client = factory.createMemcachedClient()
+        SpyMemcacheClientFactory factory = new SpyMemcacheClientFactory(new PropertiesHelper(new Properties()))
+        client = factory.createMemcacheClient()
         assert client
     }
 

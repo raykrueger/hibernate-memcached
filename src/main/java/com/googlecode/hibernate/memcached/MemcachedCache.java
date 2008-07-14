@@ -14,8 +14,6 @@
  */
 package com.googlecode.hibernate.memcached;
 
-import net.spy.memcached.MemcachedClient;
-import net.spy.memcached.OperationTimeoutException;
 import org.hibernate.cache.Cache;
 import org.hibernate.cache.CacheException;
 import org.slf4j.Logger;
@@ -52,15 +50,15 @@ public class MemcachedCache implements Cache {
     private final Logger log = LoggerFactory.getLogger(MemcachedCache.class);
 
     private final String regionName;
-    private final MemcachedClient memcachedClient;
+    private final Memcache memcache;
     private final String clearIndexKey;
     private int cacheTimeSeconds = 300;
     private boolean clearSupported = false;
     private KeyStrategy keyStrategy = new HashCodeKeyStrategy();
 
-    public MemcachedCache(String regionName, MemcachedClient memcachedClient) {
+    public MemcachedCache(String regionName, Memcache memcachedClient) {
         this.regionName = (regionName != null) ? regionName : "default";
-        this.memcachedClient = memcachedClient;
+        this.memcache = memcachedClient;
         clearIndexKey = this.regionName.replaceAll("\\s", "") + ":index_key";
     }
 
@@ -83,18 +81,13 @@ public class MemcachedCache implements Cache {
     private Object memcacheGet(Object key) {
         String stringKey = toKey(key);
         log.debug("Memcache.get({}}", stringKey);
-        try {
-            return memcachedClient.get(stringKey);
-        } catch (OperationTimeoutException e) {
-            log.warn("Cache 'get' timed out for key [" + stringKey + "]", e);
-        }
-        return null;
+        return memcache.get(stringKey);
     }
 
     private void memcacheSet(Object key, Object o) {
         String stringKey = toKey(key);
         log.debug("Memcache.set({})", stringKey);
-        memcachedClient.set(stringKey, cacheTimeSeconds, o);
+        memcache.set(stringKey, cacheTimeSeconds, o);
     }
 
     private String toKey(Object key) {
@@ -118,7 +111,7 @@ public class MemcachedCache implements Cache {
     }
 
     public void remove(Object key) throws CacheException {
-        memcachedClient.delete(toKey(key));
+        memcache.delete(toKey(key));
     }
 
     /**
@@ -130,7 +123,7 @@ public class MemcachedCache implements Cache {
      */
     public void clear() throws CacheException {
         if (clearSupported) {
-            memcachedClient.incr(clearIndexKey, 1, 1);
+            memcache.incr(clearIndexKey, 1, 1);
         }
     }
 
@@ -180,21 +173,18 @@ public class MemcachedCache implements Cache {
         Long index = null;
 
         if (clearSupported) {
-            try {
-                Object value = memcachedClient.get(clearIndexKey);
-                if (value != null) {
-                    if (value instanceof String) {
-                        index = Long.parseLong((String) value);
-                    } else if (value instanceof Long) {
-                        index = (Long) value;
-                    } else {
-                        throw new IllegalArgumentException(
-                                "Unsupported type [" + value.getClass() + "] found for clear index at cache key [" + clearIndexKey + "]");
-                    }
+            Object value = memcache.get(clearIndexKey);
+            if (value != null) {
+                if (value instanceof String) {
+                    index = Long.parseLong((String) value);
+                } else if (value instanceof Long) {
+                    index = (Long) value;
+                } else {
+                    throw new IllegalArgumentException(
+                            "Unsupported type [" + value.getClass() + "] found for clear index at cache key [" + clearIndexKey + "]");
                 }
-            } catch (OperationTimeoutException e) {
-                log.warn("Cache 'get' timed out for key [" + clearIndexKey + "]", e);
             }
+
             if (index != null) {
                 return index;
             }
