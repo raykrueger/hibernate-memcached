@@ -23,6 +23,7 @@ public class SpyMemcache implements Memcache {
 
     public Object get(String key) {
         try {
+            log.debug("MemcachedClient.get({})", key);
             return memcachedClient.get(key);
         } catch (OperationTimeoutException e) {
             log.warn("Cache 'get' timed out for key [" + key + "]", e);
@@ -31,6 +32,7 @@ public class SpyMemcache implements Memcache {
     }
 
     public void set(String key, int cacheTimeSeconds, Object o) {
+        log.debug("MemcachedClient.set({})", key);
         try {
             memcachedClient.set(key, cacheTimeSeconds, o);
         } catch (OperationTimeoutException e) {

@@ -55,6 +55,10 @@ public class MemcachedCache implements Cache {
     private int cacheTimeSeconds = 300;
     private boolean clearSupported = false;
     private KeyStrategy keyStrategy = new HashCodeKeyStrategy();
+    private boolean dogpilePreventionEnabled = false;
+    private int dogpilePreventionExpirationFactor = 2;
+
+    public static final Integer DOGPILE_TOKEN = 0;
 
     public MemcachedCache(String regionName, Memcache memcachedClient) {
         this.regionName = (regionName != null) ? regionName : "default";
@@ -78,16 +82,63 @@ public class MemcachedCache implements Cache {
         this.clearSupported = clearSupported;
     }
 
+    public boolean isDogpilePreventionEnabled() {
+        return dogpilePreventionEnabled;
+    }
+
+    public void setDogpilePreventionEnabled(boolean dogpilePreventionEnabled) {
+        this.dogpilePreventionEnabled = dogpilePreventionEnabled;
+    }
+
+    public int getDogpilePreventionExpirationFactor() {
+        return dogpilePreventionExpirationFactor;
+    }
+
+    public void setDogpilePreventionExpirationFactor(int dogpilePreventionExpirationFactor) {
+        if (dogpilePreventionExpirationFactor < 2) {
+            throw new IllegalArgumentException("dogpilePreventionExpirationFactor must be greater than 2");
+        }
+        this.dogpilePreventionExpirationFactor = dogpilePreventionExpirationFactor;
+    }
+
+    private String dogpileTokenKey(String objectKey) {
+        return objectKey + ".dogpileTokenKey";
+    }
+
     private Object memcacheGet(Object key) {
-        String stringKey = toKey(key);
-        log.debug("Memcache.get({}}", stringKey);
-        return memcache.get(stringKey);
+        String objectKey = toKey(key);
+
+        if (dogpilePreventionEnabled) {
+            String dogpileKey = dogpileTokenKey(objectKey);
+            log.debug("Checking dogpile key: [{}]", dogpileKey);
+            if (memcache.get(dogpileKey) == null) {
+                log.debug("Dogpile key ({}) not found updating token and returning null", dogpileKey);
+                memcache.set(dogpileKey, cacheTimeSeconds, DOGPILE_TOKEN);
+                return null;
+            } else {
+                log.debug("Dogpile token found for key ({}), getting cached object", dogpileKey);
+            }
+        }
+
+        log.debug("Memcache.get({})", objectKey);
+        return memcache.get(objectKey);
     }
 
     private void memcacheSet(Object key, Object o) {
-        String stringKey = toKey(key);
-        log.debug("Memcache.set({})", stringKey);
-        memcache.set(stringKey, cacheTimeSeconds, o);
+        String objectKey = toKey(key);
+
+        int cacheTime = cacheTimeSeconds;
+
+        if (dogpilePreventionEnabled) {
+            String dogpileKey = dogpileTokenKey(objectKey);
+            log.debug("Dogpile prevention enabled, setting token and adjusting object cache time. Key: [{}]", dogpileKey);
+            memcache.set(dogpileKey, cacheTimeSeconds, DOGPILE_TOKEN);
+            cacheTime = cacheTimeSeconds * dogpilePreventionExpirationFactor;
+        }
+
+        log.debug("Memcache.set({})", objectKey);
+
+        memcache.set(objectKey, cacheTime, o);
     }
 
     private String toKey(Object key) {

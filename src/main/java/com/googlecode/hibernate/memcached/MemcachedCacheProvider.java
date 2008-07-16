@@ -21,7 +21,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
 import java.util.Properties;
 
 /**
@@ -96,6 +95,8 @@ public class MemcachedCacheProvider implements CacheProvider {
     public static final String PROP_CACHE_TIME_SECONDS = PROP_PREFIX + "cacheTimeSeconds";
     public static final String PROP_CLEAR_SUPPORTED = PROP_PREFIX + "clearSupported";
     public static final String PROP_MEMCACHE_CLIENT_FACTORY = PROP_PREFIX + "memcacheClientFactory";
+    public static final String PROP_DOGPILE_PREVENTION = PROP_PREFIX + "dogpilePrevention";
+    public static final String PROP_DOGPILE_PREVENTION_EXPIRATION_FACTOR = PROP_PREFIX + "dogpilePrevention.expirationFactor";
 
     public Cache buildCache(String regionName, Properties properties) throws CacheException {
 
@@ -105,9 +106,6 @@ public class MemcachedCacheProvider implements CacheProvider {
 
         MemcachedCache cache = new MemcachedCache(regionName, client);
 
-        int defaultCacheTimeSeconds = getDefaultCacheTimeSeconds(props);
-        boolean defaultClearSupported = getDefaultClearSupported(props);
-
         String regionPrefix = PROP_PREFIX + regionName + ".";
 
         String keyStrategy = getKeyStrategyName(props, regionPrefix);
@@ -115,15 +113,31 @@ public class MemcachedCacheProvider implements CacheProvider {
             setKeyStrategy(keyStrategy, cache);
         }
 
+        int globalCacheTimeSeconds = getGlobalCacheTimeSeconds(props);
         int cacheTime = props.getInt(regionPrefix + "cacheTimeSeconds",
-                defaultCacheTimeSeconds);
+                globalCacheTimeSeconds);
         cache.setCacheTimeSeconds(cacheTime);
 
+        boolean globalClearSupported = getGlobalClearSupported(props);
         boolean clearSupported = props.getBoolean(regionPrefix + "clearSupported",
-                defaultClearSupported);
+                globalClearSupported);
         cache.setClearSupported(clearSupported);
 
+        boolean globalDogpilePrevention = getGlobalDogpilePrevention(props);
+        boolean dogpilePrevention = props.getBoolean(PROP_DOGPILE_PREVENTION,
+                globalDogpilePrevention);
+        cache.setDogpilePreventionEnabled(dogpilePrevention);
+
+        if (dogpilePrevention) {
+            cache.setDogpilePreventionExpirationFactor(
+                    props.getInt(PROP_DOGPILE_PREVENTION_EXPIRATION_FACTOR, 2));
+        }
+
         return cache;
+    }
+
+    private boolean getGlobalDogpilePrevention(PropertiesHelper props) {
+        return props.getBoolean(PROP_DOGPILE_PREVENTION, false);
     }
 
     private String getKeyStrategyName(PropertiesHelper properties, String regionPrefix) {
@@ -148,11 +162,11 @@ public class MemcachedCacheProvider implements CacheProvider {
         }
     }
 
-    private boolean getDefaultClearSupported(PropertiesHelper properties) {
+    private boolean getGlobalClearSupported(PropertiesHelper properties) {
         return properties.getBoolean(PROP_CLEAR_SUPPORTED, DEFAULT_CLEAR_SUPPORTED);
     }
 
-    private int getDefaultCacheTimeSeconds(PropertiesHelper props) {
+    private int getGlobalCacheTimeSeconds(PropertiesHelper props) {
         return props.getInt(PROP_CACHE_TIME_SECONDS, DEFAULT_CACHE_TIME_SECONDS);
     }
 
@@ -194,13 +208,7 @@ public class MemcachedCacheProvider implements CacheProvider {
         MemcacheClientFactory clientFactory;
         try {
             clientFactory = (MemcacheClientFactory) constructor.newInstance(properties);
-        } catch (InstantiationException e) {
-            throw new CacheException(
-                    "Unable to instantiate factory class [" + factoryClassName + "]");
-        } catch (IllegalAccessException e) {
-            throw new CacheException(
-                    "Unable to instantiate factory class [" + factoryClassName + "]");
-        } catch (InvocationTargetException e) {
+        } catch (Exception e) {
             throw new CacheException(
                     "Unable to instantiate factory class [" + factoryClassName + "]");
         }
