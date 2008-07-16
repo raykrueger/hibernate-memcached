@@ -6,7 +6,6 @@ import com.googlecode.hibernate.memcached.spymemcached.SpyMemcache
 import net.spy.memcached.AddrUtil
 import net.spy.memcached.MemcachedClient
 
-
 /**
  * DOCUMENT ME!
  * @author Ray Krueger
@@ -27,17 +26,17 @@ class SpyMemcacheTest extends BaseTestCase {
 
     void test() {
         cache.put("test", "value")
-        Thread.sleep(500)
+        Thread.sleep(100)
         assertEquals("value", cache.get("test"))
     }
 
     void test_clear() {
         cache.setClearSupported(true)
         cache.put("test", "value")
-        Thread.sleep(500)
+        Thread.sleep(100)
         assertEquals("value", cache.get("test"))
         cache.clear()
-        Thread.sleep(500)
+        Thread.sleep(100)
         assertNull(cache.get("test"))
     }
 

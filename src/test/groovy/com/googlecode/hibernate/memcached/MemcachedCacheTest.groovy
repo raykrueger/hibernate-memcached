@@ -10,8 +10,16 @@ class MemcachedCacheTest extends BaseTestCase {
     void test_basics() {
         cache = new MemcachedCache("region", new MockMemcached())
         assertNull cache.get("test")
-        cache.put("test", "value")
+
+        cache.put "test", "value"
         assertEquals "value", cache.get("test")
+
+        cache.update "test", "blah"
+        assertEquals "blah", cache.read("test")
+
+        cache.remove "test"
+        assertNull cache.get("test")
+
     }
 
     void test_dogpile_cache_miss() {

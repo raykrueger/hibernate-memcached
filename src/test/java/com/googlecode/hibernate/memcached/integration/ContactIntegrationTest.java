@@ -52,7 +52,7 @@ public class ContactIntegrationTest extends AbstractHibernateTestCase {
 
     public void test_query_cache_with_date() throws Exception {
 
-        Thread.sleep(3000);
+        Thread.sleep(100);
         Calendar birthday = Calendar.getInstance();
         birthday.set(Calendar.HOUR_OF_DAY, 0);
         birthday.set(Calendar.MINUTE, 0);
