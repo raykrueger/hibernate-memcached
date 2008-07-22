@@ -43,6 +43,11 @@ public class PropertiesHelper {
         return (int) getLong(key, defaultVal);
     }
 
+    public double getDouble(String key, double defaultVal) {
+        String val = get(key);
+        return val == null ? defaultVal : Double.parseDouble(val);
+    }
+
     public <T extends Enum<T>> T getEnum(String key, Class<T> type, T defaultValue) {
         String val = get(key);
         return val == null ? defaultValue : Enum.valueOf(type, val);

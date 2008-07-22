@@ -87,61 +87,37 @@ public class MemcachedCacheProvider implements CacheProvider {
 
     private Memcache client;
 
-    public static final int DEFAULT_CACHE_TIME_SECONDS = 300;
-    public static final boolean DEFAULT_CLEAR_SUPPORTED = false;
-    public static final String DEFAULT_MEMCACHE_CLIENT_FACTORY = "com.googlecode.hibernate.memcached.spymemcached.SpyMemcacheClientFactory";
-
-    public static final String PROP_PREFIX = "hibernate.memcached.";
-    public static final String PROP_CACHE_TIME_SECONDS = PROP_PREFIX + "cacheTimeSeconds";
-    public static final String PROP_CLEAR_SUPPORTED = PROP_PREFIX + "clearSupported";
-    public static final String PROP_MEMCACHE_CLIENT_FACTORY = PROP_PREFIX + "memcacheClientFactory";
-    public static final String PROP_DOGPILE_PREVENTION = PROP_PREFIX + "dogpilePrevention";
-    public static final String PROP_DOGPILE_PREVENTION_EXPIRATION_FACTOR = PROP_PREFIX + "dogpilePrevention.expirationFactor";
-
     public Cache buildCache(String regionName, Properties properties) throws CacheException {
 
-        PropertiesHelper props = new PropertiesHelper(properties);
+        Config config = new Config(new PropertiesHelper(properties));
 
         log.info("Building cache for region [{}]", regionName);
 
         MemcachedCache cache = new MemcachedCache(regionName, client);
 
-        String regionPrefix = PROP_PREFIX + regionName + ".";
-
-        String keyStrategy = getKeyStrategyName(props, regionPrefix);
+        String keyStrategy = config.getKeyStrategyName(regionName);
         if (keyStrategy != null) {
             setKeyStrategy(keyStrategy, cache);
         }
 
-        int globalCacheTimeSeconds = getGlobalCacheTimeSeconds(props);
-        int cacheTime = props.getInt(regionPrefix + "cacheTimeSeconds",
-                globalCacheTimeSeconds);
-        cache.setCacheTimeSeconds(cacheTime);
+        cache.setCacheTimeSeconds(
+                config.getCacheTimeSeconds(regionName)
+        );
 
-        boolean globalClearSupported = getGlobalClearSupported(props);
-        boolean clearSupported = props.getBoolean(regionPrefix + "clearSupported",
-                globalClearSupported);
-        cache.setClearSupported(clearSupported);
+        cache.setClearSupported(
+                config.isClearSupported(regionName)
+        );
 
-        boolean globalDogpilePrevention = getGlobalDogpilePrevention(props);
-        boolean dogpilePrevention = props.getBoolean(regionPrefix + "dogpilePrevention",
-                globalDogpilePrevention);
+        boolean dogpilePrevention = config.isDogpilePreventionEnabled(regionName);
         cache.setDogpilePreventionEnabled(dogpilePrevention);
 
         if (dogpilePrevention) {
             cache.setDogpilePreventionExpirationFactor(
-                    props.getInt(PROP_DOGPILE_PREVENTION_EXPIRATION_FACTOR, 2));
+                    config.getDogpilePreventionExpirationFactor(regionName)
+            );
         }
 
         return cache;
-    }
-
-    private boolean getGlobalDogpilePrevention(PropertiesHelper props) {
-        return props.getBoolean(PROP_DOGPILE_PREVENTION, false);
-    }
-
-    private String getKeyStrategyName(PropertiesHelper properties, String regionPrefix) {
-        return properties.findValue(PROP_PREFIX + "keyStrategy", regionPrefix + "keyStrategy");
     }
 
     private void setKeyStrategy(String keyStrategyName, MemcachedCache cache) {
@@ -162,14 +138,6 @@ public class MemcachedCacheProvider implements CacheProvider {
         }
     }
 
-    private boolean getGlobalClearSupported(PropertiesHelper properties) {
-        return properties.getBoolean(PROP_CLEAR_SUPPORTED, DEFAULT_CLEAR_SUPPORTED);
-    }
-
-    private int getGlobalCacheTimeSeconds(PropertiesHelper props) {
-        return props.getInt(PROP_CACHE_TIME_SECONDS, DEFAULT_CACHE_TIME_SECONDS);
-    }
-
     /**
      * No clue what this is for, Hibernate docs don't say.
      *
@@ -182,16 +150,15 @@ public class MemcachedCacheProvider implements CacheProvider {
     public void start(Properties properties) throws CacheException {
         log.info("Starting MemcachedClient...");
         try {
-            client = getMemcachedClientFactory(new PropertiesHelper(properties))
+            client = getMemcachedClientFactory(new Config(new PropertiesHelper(properties)))
                     .createMemcacheClient();
         } catch (Exception e) {
             throw new CacheException("Unable to initialize MemcachedClient", e);
         }
     }
 
-    protected MemcacheClientFactory getMemcachedClientFactory(PropertiesHelper properties) {
-        String factoryClassName = properties.get(PROP_MEMCACHE_CLIENT_FACTORY,
-                DEFAULT_MEMCACHE_CLIENT_FACTORY);
+    protected MemcacheClientFactory getMemcachedClientFactory(Config config) {
+        String factoryClassName = config.getMemcachedClientFactoryName();
 
         Constructor constructor;
         try {
@@ -207,7 +174,7 @@ public class MemcachedCacheProvider implements CacheProvider {
 
         MemcacheClientFactory clientFactory;
         try {
-            clientFactory = (MemcacheClientFactory) constructor.newInstance(properties);
+            clientFactory = (MemcacheClientFactory) constructor.newInstance(config.getPropertiesHelper());
         } catch (Exception e) {
             throw new CacheException(
                     "Unable to instantiate factory class [" + factoryClassName + "]");

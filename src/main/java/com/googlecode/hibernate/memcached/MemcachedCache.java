@@ -56,7 +56,7 @@ public class MemcachedCache implements Cache {
     private boolean clearSupported = false;
     private KeyStrategy keyStrategy = new HashCodeKeyStrategy();
     private boolean dogpilePreventionEnabled = false;
-    private int dogpilePreventionExpirationFactor = 2;
+    private double dogpilePreventionExpirationFactor = 2;
 
     public static final Integer DOGPILE_TOKEN = 0;
 
@@ -90,13 +90,13 @@ public class MemcachedCache implements Cache {
         this.dogpilePreventionEnabled = dogpilePreventionEnabled;
     }
 
-    public int getDogpilePreventionExpirationFactor() {
+    public double getDogpilePreventionExpirationFactor() {
         return dogpilePreventionExpirationFactor;
     }
 
-    public void setDogpilePreventionExpirationFactor(int dogpilePreventionExpirationFactor) {
-        if (dogpilePreventionExpirationFactor < 2) {
-            throw new IllegalArgumentException("dogpilePreventionExpirationFactor must be greater than 2");
+    public void setDogpilePreventionExpirationFactor(double dogpilePreventionExpirationFactor) {
+        if (dogpilePreventionExpirationFactor < 1.0) {
+            throw new IllegalArgumentException("dogpilePreventionExpirationFactor must be greater than 1.0");
         }
         this.dogpilePreventionExpirationFactor = dogpilePreventionExpirationFactor;
     }
@@ -133,7 +133,7 @@ public class MemcachedCache implements Cache {
             String dogpileKey = dogpileTokenKey(objectKey);
             log.debug("Dogpile prevention enabled, setting token and adjusting object cache time. Key: [{}]", dogpileKey);
             memcache.set(dogpileKey, cacheTimeSeconds, DOGPILE_TOKEN);
-            cacheTime = cacheTimeSeconds * dogpilePreventionExpirationFactor;
+            cacheTime = (int) (cacheTimeSeconds * dogpilePreventionExpirationFactor);
         }
 
         log.debug("Memcache.set({})", objectKey);

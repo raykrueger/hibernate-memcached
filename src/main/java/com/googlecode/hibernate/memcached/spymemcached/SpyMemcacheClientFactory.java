@@ -1,5 +1,6 @@
 package com.googlecode.hibernate.memcached.spymemcached;
 
+import com.googlecode.hibernate.memcached.Config;
 import com.googlecode.hibernate.memcached.Memcache;
 import com.googlecode.hibernate.memcached.MemcacheClientFactory;
 import com.googlecode.hibernate.memcached.PropertiesHelper;
@@ -16,12 +17,11 @@ import net.spy.memcached.MemcachedClient;
  */
 public class SpyMemcacheClientFactory implements MemcacheClientFactory {
 
-    private static final String PROP_PREFIX = "hibernate.memcached.";
-    public static final String PROP_SERVERS = PROP_PREFIX + "servers";
-    public static final String PROP_OPERATION_QUEUE_LENGTH = PROP_PREFIX + "operationQueueLength";
-    public static final String PROP_READ_BUFFER_SIZE = PROP_PREFIX + "readBufferSize";
-    public static final String PROP_OPERATION_TIMEOUT = PROP_PREFIX + "operationTimeout";
-    public static final String PROP_HASH_ALGORITHM = PROP_PREFIX + "hashAlgorithm";
+    public static final String PROP_SERVERS = Config.PROP_PREFIX + "servers";
+    public static final String PROP_OPERATION_QUEUE_LENGTH = Config.PROP_PREFIX + "operationQueueLength";
+    public static final String PROP_READ_BUFFER_SIZE = Config.PROP_PREFIX + "readBufferSize";
+    public static final String PROP_OPERATION_TIMEOUT = Config.PROP_PREFIX + "operationTimeout";
+    public static final String PROP_HASH_ALGORITHM = Config.PROP_PREFIX + "hashAlgorithm";
     private final PropertiesHelper properties;
 
     public SpyMemcacheClientFactory(PropertiesHelper properties) {
