@@ -124,7 +124,7 @@ public class MemcachedCacheProvider implements CacheProvider {
         cache.setClearSupported(clearSupported);
 
         boolean globalDogpilePrevention = getGlobalDogpilePrevention(props);
-        boolean dogpilePrevention = props.getBoolean(PROP_DOGPILE_PREVENTION,
+        boolean dogpilePrevention = props.getBoolean(regionPrefix + "dogpilePrevention",
                 globalDogpilePrevention);
         cache.setDogpilePreventionEnabled(dogpilePrevention);
 
