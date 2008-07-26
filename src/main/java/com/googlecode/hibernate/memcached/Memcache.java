@@ -1,7 +1,7 @@
 package com.googlecode.hibernate.memcached;
 
 /**
- * DOCUMENT ME!
+ * Interface to abstract memcache operations.
  *
  * @author Ray Krueger
  */

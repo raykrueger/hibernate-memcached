@@ -48,7 +48,7 @@ public abstract class AbstractKeyStrategy implements KeyStrategy {
 
         String keyHashCode = DigestUtils.md5Hex(key.getBytes());
 
-        log.warn("Encoded key [{}] to uuid [{}]. " +
+        log.warn("Encoded key [{}] to md5 hash [{}]. " +
                 "Be sure to set cache region names whenever possible as the names Hibernate generates are really long.",
                 key, keyHashCode
         );
