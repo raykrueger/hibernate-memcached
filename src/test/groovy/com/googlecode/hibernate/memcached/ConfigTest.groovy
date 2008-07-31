@@ -5,8 +5,8 @@ package com.googlecode.hibernate.memcached
  */
 class ConfigTest extends BaseTestCase {
 
-    Config newConfig(Properties properties) {
-        return new Config(new PropertiesHelper(properties))
+    Config newConfig(Properties props) {
+        new Config(new PropertiesHelper(props))
     }
 
     void test_cache_time_seconds() {
