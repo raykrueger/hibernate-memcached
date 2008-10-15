@@ -1,0 +1,207 @@
+
+
+
+
+ <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+ "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html>
+<head>
+
+ <title>Configuration - hibernate-memcached - Google Code - How to configure hibernate-memcached 0.6</title>
+ <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+ <link type="text/css" rel="stylesheet" href="/hosting/css/d_20080901.css" />
+
+
+
+<!--[if IE]>
+ <link type="text/css" rel="stylesheet" href="/hosting/css/d_ie.css" />
+<![endif]-->
+</head>
+<body class="t6">
+ <table style="padding:0px; margin: 0px 0px -6px 0; width:100%" cellpadding=0 cellspacing=0>
+ <tr>
+ <td style="width:153px"><a href="/"><img src="http://www.gstatic.com/codesite/ph/images/code_sm.png" width=153 height=55 alt="Google"/></a></td>
+
+ <td style="padding-left: 1.5em">
+
+ <div id="pname">
+ <a href="/p/hibernate-memcached/" style="text-decoration:none; color:#000">hibernate-memcached</a>
+
+ </div>
+ <div id="psum">
+ <i><a href="/p/hibernate-memcached/" style="text-decoration:none; color:#000">Memcached based second level cache for Hibernate</a></i>
+ </div>
+
+ </td>
+
+ <td style="white-space:nowrap; text-align:right">
+
+ </tr>
+ </table>
+
+<table cellspacing="0" cellpadding="0" width="100%" align="center" border="0" class="st">
+ <tr>
+
+
+
+ <td>
+ <div class="issueDetail">
+<div class=isf>
+
+
+ <span class="inIssueList">
+
+
+
+
+
+
+
+
+</div>
+</div>
+
+ </td>
+
+
+
+
+
+
+
+
+ <td height=4 align=right valign=top class="bevel-right">
+ <div class="round4"></div>
+ <div class="round2"></div>
+ <div class="round1"></div>
+
+ </td>
+ </tr>
+</table>
+
+<div id="maincol">
+<!-- IE -->
+
+
+
+
+
+
+ <style>
+ .artifactcomment, #commentform {
+ margin: .5em 0 0 0;
+ padding: .3em 0 .3em .3em;
+ border-top: 3px solid #c3d9ff;
+ }
+ #commentform { padding-top: 1em; }
+ .delcom { background: #e8e8e8 }
+ .commentcontent { margin: 1em 0;}
+ </style>
+
+
+ <div id="wikicontent">
+ <table width="100%" border=0 cellspacing=0 cellpadding=0>
+ <tr>
+
+ <td class=vt id="wikimaincol" width="100%">
+
+ <div id="wikiheader" style="margin-bottom:1em">
+
+ <span style="font-size:120%;font-weight:bold">Configuration</span>
+ &nbsp;
+
+
+ <div style="font-style:italic; margin-top: 3px">How to configure hibernate-memcached 1.0</div>
+
+ </div>
+
+<h2><a id="Adding_hibernate-memcached_to_your_application"/>Adding hibernate-memcached to your application</h2><p>If you are using Maven2 for your application build you can follow the instructions on the  <a href="/p/hibernate-memcached/wiki/MavenRepository">MavenRepository</a> page. For those that aren&#x27;t using Maven2 you&#x27;ll need to collect a few simple jars for yourself. I am going to assume you already have hibenrnate3 setup before you came here. </p>
+
+<p>You&#x27;ll need...
+ 	<ul><li>hibernate-memcached-&lt;version&gt;.jar </li>
+ 		<li><a href="http://repo1.maven.org/maven2/commons-codec/commons-codec/1.3/commons-codec-1.3.jar" rel="nofollow">commons-codec 1.3</a> </li>
+ 		<li><a href="http://repo1.maven.org/maven2/org/slf4j/slf4j-api/1.5.0/slf4j-api-1.5.0.jar" rel="nofollow">slf4j-1.5.0.jar</a> </li>
+ 		<li>An slf4j implementation for your preferred logging framework. For log4j you can use <a href="http://repo1.maven.org/maven2/org/slf4j/slf4j-log4j12/1.5.0/slf4j-log4j12-1.5.0.jar" rel="nofollow">slf4j-log4j12-1.5.0.jar</a>. </li>
+ 	</ul>
+</p>
+
+<p>If you are using <a href="http://code.google.com/p/spymemcached/">spymemcached</a> as the MemCached client, you also need
+ 	<ul><li><a href="http://spymemcached.googlecode.com/files/memcached-2.1.jar" rel="nofollow">memcached-2.1.jar</a> </li>
+ 		<li><a href="http://bleu.west.spy.net/~dustin/repo/spy/jars/spy-2.4.jar" rel="nofollow">spy-2.4.jar</a> </li>
+ 	</ul>
+</p>
+
+<p>or if you prefer Whalin's <a href="http://whalin.com/memcached/">memcached client for java</a>, you need to download java_memcached-release_2.0.1.jar from the <a href="http://whalin.com/memcached/#download">download page</a> according to your Java VM version.
+</p>
+
+<h2><a id="Configuring_Hibernate"/>Configuring Hibernate</h2>
+<p>The first thing to do is to tell hibernate which cache provider you&#x27;d like to use, and to enable the second level cache.
+	<table>
+		<tr>
+			<td style="border: 1px solid #aaa; padding: 5px;">hibernate.cache.provider_class</td><td style="border: 1px solid #aaa; padding: 5px;">com.googlecode.hibernate.memcached.MemcachedCacheProvider</td>
+		</tr>
+	</table>
+</p>
+<p>Using just the property above you get basic entity caching by default. The hibernate-memcached library supports query caching, but you have to enable query caching separately.
+	<table>
+		<tr>
+			<td style="border: 1px solid #aaa; padding: 5px;">hibernate.cache.use_query_cache</td><td style="border: 1px solid #aaa; padding: 5px;">true</td>
+		</tr>
+	</table>
+</p>
+<p>!Now you can start setting up the hibernate-memcached specific properties. The hibernate-memcached properties are divided into two categories; cache-wide settings and cache-region settings. </p>
+
+<h3><a id="Cache_Wide_Settings"/>Cache Wide Settings</h3>
+<p>The cache wide settings all have defaults can mostly be overwritten at a cache-region level. For both spymemcached and Whalin's client, you can set:
+	<table>
+		<tr><td style="border: 1px solid #aaa; padding: 5px;"> <strong>Property</strong> </td><td style="border: 1px solid #aaa; padding: 5px;"> <strong>Default</strong> </td><td style="border: 1px solid #aaa; padding: 5px;"> <strong>Description</strong> </td></tr>
+		<tr><td style="border: 1px solid #aaa; padding: 5px;"> hibernate.memcached.servers </td><td style="border: 1px solid #aaa; padding: 5px;"> localhost:11211 </td><td style="border: 1px solid #aaa; padding: 5px;"> Space delimited list of memcached instances in host:port format </td></tr>
+		<tr><td style="border: 1px solid #aaa; padding: 5px;"> hibernate.memcached.cacheTimeSeconds </td><td style="border: 1px solid #aaa; padding: 5px;"> 300 </td><td style="border: 1px solid #aaa; padding: 5px;"> The default number of seconds items should be cached. Can be overriden at the regon level. </td></tr>
+		<tr><td style="border: 1px solid #aaa; padding: 5px;"> hibernate.memcached.keyStrategy </td><td style="border: 1px solid #aaa; padding: 5px;"> HashCodeKeyStrategy </td><td style="border: 1px solid #aaa; padding: 5px;"> Sets the strategy class to to use for generating cache keys. Must provide a class name that implements KeyStrategy </td></tr>
+		<tr><td style="border: 1px solid #aaa; padding: 5px;"> hibernate.memcached.clearSupported </td><td style="border: 1px solid #aaa; padding: 5px;"> false </td><td style="border: 1px solid #aaa; padding: 5px;"> Enables support for the MemcachedCache.clear() method for all cache regions. The way clear is implemented for memcached is expensive and adds overhead to all get/set operations. It is not recommended for production use. </td></tr>
+	</table>
+</p>
+<p>For spymemcached, you can set:
+	<table>
+		<tr><td style="border: 1px solid #aaa; padding: 5px;"> <strong>Property</strong> </td><td style="border: 1px solid #aaa; padding: 5px;"> <strong>Default</strong> </td><td style="border: 1px solid #aaa; padding: 5px;"> <strong>Description</strong> </td></tr>
+		<tr><td style="border: 1px solid #aaa; padding: 5px;"> hibernate.memcached.readBufferSize </td><td style="border: 1px solid #aaa; padding: 5px;"> DefaultConnectionFactory.DEFAULT_READ_BUFFER_SIZE </td><td style="border: 1px solid #aaa; padding: 5px;"> The read buffer size for each server connection from this factory </td></tr>
+		<tr><td style="border: 1px solid #aaa; padding: 5px;"> hibernate.memcached.operationQueueLength </td><td style="border: 1px solid #aaa; padding: 5px;"> DefaultConnectionFactory.DEFAULT_OP_QUEUE_LEN </td><td style="border: 1px solid #aaa; padding: 5px;"> Maximum length of the operation queue returned by this connection factory </td></tr>
+		<tr><td style="border: 1px solid #aaa; padding: 5px;"> hibernate.memcached.operationTimeout </td><td style="border: 1px solid #aaa; padding: 5px;"> DefaultConnectionFactory.DEFAULT_OPERATION_TIMEOUT </td><td style="border: 1px solid #aaa; padding: 5px;"> Default operation timeout in milliseconds </td></tr>
+		<tr><td style="border: 1px solid #aaa; padding: 5px;"> hibernate.memcached.hashAlgorithm </td><td style="border: 1px solid #aaa; padding: 5px;"> HashAlgorithm.KETAMA_HASH </td><td style="border: 1px solid #aaa; padding: 5px;"> Which hash algorithm to use when adding items to the cache. Note: the MemcachedClient defaults to using HashAlgorithm.NATIVE_HASH, while the hibernate-memcached cache defaults to KETAMA_HASH for &quot;consistent hashing&quot; </td></tr>
+	</table>
+</p>
+
+<p>For Whalin's client, you can set:
+	<table>
+		<tr><td style="border: 1px solid #aaa; padding: 5px;"> <strong>Property</strong> </td><td style="border: 1px solid #aaa; padding: 5px;"> <strong>Default</strong> </td><td style="border: 1px solid #aaa; padding: 5px;"> <strong>Description</strong> </td></tr>
+		<tr><td style="border: 1px solid #aaa; padding: 5px;"> hibernate.memcached.memcacheClientFactory </td><td style="border: 1px solid #aaa; padding: 5px;">com.googlecode.hibernate.memcached.<br>spymemcached.SpyMemcacheClientFactory</td><td style="border: 1px solid #aaa; padding: 5px;"> The default setting is to use spymemcached. To use Whalin's client, it MUST BE set to com.googlecode.hibernate.memcached.dangamemcached.DangaMemcacheClientFactory explicitly </td></tr>
+		<tr><td style="border: 1px solid #aaa; padding: 5px;"> hibernate.memcached.weights </td><td style="border: 1px solid #aaa; padding: 5px;">  </td><td style="border: 1px solid #aaa; padding: 5px;"> Space delimited list of server weights. If not set, all servers get the same weight </td></tr>
+		<tr><td style="border: 1px solid #aaa; padding: 5px;"> hibernate.memcached.errorHandler </td><td style="border: 1px solid #aaa; padding: 5px;"> com.googlecode.hibernate.memcached.<br>dangamemcached.SimpleErrorHandler </td><td style="border: 1px solid #aaa; padding: 5px;"> Error handler used by Whalin's client internally</td></tr>
+		<tr><td style="border: 1px solid #aaa; padding: 5px;"> hibernate.memcached.poolName </td><td style="border: 1px solid #aaa; padding: 5px;"> default </td><td style="border: 1px solid #aaa; padding: 5px;"> The name of SockIOPool </td></tr>
+		<tr><td style="border: 1px solid #aaa; padding: 5px;"> hibernate.memcached.initConn </td><td style="border: 1px solid #aaa; padding: 5px;"> 1 </td><td style="border: 1px solid #aaa; padding: 5px;"> Initial pool size </td></tr>
+		<tr><td style="border: 1px solid #aaa; padding: 5px;"> hibernate.memcached.minConn </td><td style="border: 1px solid #aaa; padding: 5px;"> 1 </td><td style="border: 1px solid #aaa; padding: 5px;"> Min pool size </td></tr>
+		<tr><td style="border: 1px solid #aaa; padding: 5px;"> hibernate.memcached.maxConn </td><td style="border: 1px solid #aaa; padding: 5px;"> 10 </td><td style="border: 1px solid #aaa; padding: 5px;"> Max pool size </td></tr>
+		<tr><td style="border: 1px solid #aaa; padding: 5px;"> hibernate.memcached.maxIdle </td><td style="border: 1px solid #aaa; padding: 5px;"> 3000000 </td><td style="border: 1px solid #aaa; padding: 5px;"> Max idle time for available sockets. Default 5 minutes </td></tr>
+		<tr><td style="border: 1px solid #aaa; padding: 5px;"> hibernate.memcached.socketTimeout </td><td style="border: 1px solid #aaa; padding: 5px;"> 30000 </td><td style="border: 1px solid #aaa; padding: 5px;"> Default timeout of socket reads. Default 30 seconds </td></tr>
+		<tr><td style="border: 1px solid #aaa; padding: 5px;"> hibernate.memcached.socketConnectTimeout </td><td style="border: 1px solid #aaa; padding: 5px;"> 3000 </td><td style="border: 1px solid #aaa; padding: 5px;"> Default timeout of socket connections. Default 3 seconds </td></tr>
+		<tr><td style="border: 1px solid #aaa; padding: 5px;"> hibernate.memcached.maintSleep </td><td style="border: 1px solid #aaa; padding: 5px;"> 30000 </td><td style="border: 1px solid #aaa; padding: 5px;"> Maintenance thread sleep time. Default 30 seconds </td></tr>
+		<tr><td style="border: 1px solid #aaa; padding: 5px;"> hibernate.memcached.compressEnable </td><td style="border: 1px solid #aaa; padding: 5px;"> true </td><td style="border: 1px solid #aaa; padding: 5px;"> If compression enabled </td></tr>
+		<tr><td style="border: 1px solid #aaa; padding: 5px;"> hibernate.memcached.defaultEncoding </td><td style="border: 1px solid #aaa; padding: 5px;"> UTF-8 </td><td style="border: 1px solid #aaa; padding: 5px;"> Default encoding </td></tr>
+	</table>
+</p>
+
+<h3><a id="Cache_Region_Settings"/>Cache Region Settings</h3>
+<p>Cache regon properties are set by giving your cached data a &quot;region name&quot; in hibernate. You can tune the MemcachedCache instance for your region using the following properties. These properties essentially override the cache-wide properties above. </p><p><table><tr><td style="border: 1px solid #aaa; padding: 5px;"> <strong>Property</strong> </td><td style="border: 1px solid #aaa; padding: 5px;"> <strong>Default</strong> </td><td style="border: 1px solid #aaa; padding: 5px;"> <strong>Description</strong> </td></tr> <tr><td style="border: 1px solid #aaa; padding: 5px;"> hibernate.memcached.[region-name].cacheTimeSeconds </td><td style="border: 1px solid #aaa; padding: 5px;"> none, see hibernate.memcached.cacheTimeSeconds </td><td style="border: 1px solid #aaa; padding: 5px;"> Set the cache time for this cache region, overriding the cache-wide setting. </td></tr> <tr><td style="border: 1px solid #aaa; padding: 5px;"> hibernate.memcached.[region-name].keyStrategy </td><td style="border: 1px solid #aaa; padding: 5px;"> none, see hibernate.memcached.keyStrategy </td><td style="border: 1px solid #aaa; padding: 5px;"> Overrides the strategy class to to use for generating cache keys in this cache region. Must provide a class name that implements KeyStrategy </td></tr> <tr><td style="border: 1px solid #aaa; padding: 5px;"> hibernate.memcached.[region-name].clearSupported </td><td style="border: 1px solid #aaa; padding: 5px;"> none, see hibernate.memcached.clearSupported </td><td style="border: 1px solid #aaa; padding: 5px;"> Enables clear() operations for this cache region only. Again, the clear operation incurs cost on every get/set operation. </td></tr> </table></p>
+
+ </td>
+ </tr>
+ </table>
+ </div>
+
+ </div>
+
+ </body>
+</html>
+
+
