@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<project name="hibernate-memcached" default="package" basedir=".">
+
+	<property name="project.title"   value="Hibernate MemCached" />
+	<property name="code.dir"        value="sources/com/googlecode/hibernate/memcached" />
+	<property name="doc.dir"         value="doc" />
+	<property name="src.dir"         value="src" />
+	<property name="build.dir"       value="classes" />
+	<property name="ver"             value="1.0" />
+
+	<property environment="env"/>
+	<property file="build.properties"/>
+	<property name="project" value="hibernate-memcached"/>
+
+	<path id="project.class.path">
+		<pathelement path = "lib/commons-codec-1.3.jar"/>
+		<pathelement path = "lib/hibernate3.jar"/>
+		<pathelement path = "lib/java_memcached-release_2.0.1.jar"/>
+		<pathelement path = "lib/log4j.jar"/>
+		<pathelement path = "lib/memcached-2.1.jar"/>
+		<pathelement path = "lib/slf4j-api-1.5.0.jar"/>
+		<pathelement path = "lib/slf4j-log4j12-1.5.0.jar"/>
+		<pathelement path = "lib/spy-2.4.jar"/>
+	</path>
+
+	<!-- package release -->
+	<!-- ant package -Dver=release_1.3 -Dlog4j=1 -->
+	<target name="package" depends="clean, setup, pkg-compile, javadoc, jar">
+		<copy file="hibernate-memcached-${ver}/hibernate-memcached-${ver}.jar" todir="."/>
+		<copy file="hibernate-memcached-${ver}/hibernate-memcached-${ver}-javadoc.jar" todir="."/>
+		<copy file="hibernate-memcached-${ver}/hibernate-memcached-${ver}-sources.jar" todir="."/>
+
+		<delete dir="hibernate-memcached-${ver}" />
+	</target>
+
+	<target name="clean">
+		<!-- delete dir="${build.dir}"/-->
+		<delete dir="hibernate-memcached-${ver}" />
+		<delete file="hibernate-memcached-${ver}.jar"/>
+		<delete file="hibernate-memcached-${ver}-javadoc.jar"/>
+		<delete file="hibernate-memcached-${ver}-sources.jar"/>
+	</target>
+
+	<target name="setup">
+		<mkdir dir="hibernate-memcached-${ver}"/>
+		<mkdir dir="hibernate-memcached-${ver}/javadoc"/>
+		<mkdir dir="hibernate-memcached-${ver}/sources/com/googlecode/hibernate/memcached"/>
+		<mkdir dir="hibernate-memcached-${ver}/classes"/>
+
+		<!-- copy source -->
+		<copy todir="hibernate-memcached-${ver}/sources/com/googlecode/hibernate/memcached">
+			<fileset dir="${code.dir}" defaultexcludes="true" excludes="**/*.xml **/*.swp **/*.swo"/>
+        </copy>
+	</target>
+
+	<!-- javadoc -->
+	<target name="javadoc" depends="clean, setup">
+		<delete>
+			<fileset dir="hibernate-memcached-${ver}/javadoc" />
+		</delete>
+
+		<javadoc sourcepath="hibernate-memcached-${ver}/sources"
+			destdir="hibernate-memcached-${ver}/javadoc"
+			packagenames= "com.googlecode.hibernate.memcached.*"
+			author= "true"
+			private="true"
+			locale="en_US"
+			charset="ISO-8859-1"
+			version="true"
+			defaultexcludes="yes"
+			classpathref="project.class.path"
+			use="true"
+			windowtitle="hibernate-memcached ${ver} API"
+			doctitle="&lt;h1&gt;hibernate-memcached ${ver} API&lt;/h1&gt;">
+			<bottom><![CDATA[Copyright &#169; 2008. All Rights Reserved.]]></bottom>
+    	</javadoc>
+	</target>
+
+	<!-- compilation target for packeging operations -->
+	<target name="pkg-compile" depends="clean, setup">
+		<javac debug="yes" srcdir="hibernate-memcached-${ver}/sources" destdir="hibernate-memcached-${ver}/classes" deprecation="true" target="1.5">
+			<classpath refid="project.class.path"/>
+		</javac>
+	</target>
+
+	<target name="jar" depends="pkg-compile, javadoc">
+		<jar compress="yes" jarfile="hibernate-memcached-${ver}/hibernate-memcached-${ver}.jar" basedir="hibernate-memcached-${ver}/classes"/>
+		<jar compress="yes" jarfile="hibernate-memcached-${ver}/hibernate-memcached-${ver}-javadoc.jar" basedir="hibernate-memcached-${ver}/javadoc"/>
+		<jar compress="yes" jarfile="hibernate-memcached-${ver}/hibernate-memcached-${ver}-sources.jar" basedir="hibernate-memcached-${ver}/sources"/>
+    </target>
+
+	<!-- compilation target -->
+	<target name="compile">
+		<mkdir dir="${build.dir}"/>
+		<javac debug="yes" srcdir="${src.dir}" destdir="${build.dir}" deprecation="true" compiler="modern">
+			<compilerarg value="-Xlint:unchecked"/>
+			<classpath refid="project.class.path"/>
+		</javac>
+	</target>
+</project>
