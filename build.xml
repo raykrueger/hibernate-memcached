@@ -2,7 +2,7 @@
 <project name="hibernate-memcached" default="package" basedir=".">
 
 	<property name="project.title"   value="Hibernate MemCached" />
-	<property name="code.dir"        value="sources/com/googlecode/hibernate/memcached" />
+	<property name="code.dir"        value="src/com/googlecode/hibernate/memcached" />
 	<property name="doc.dir"         value="doc" />
 	<property name="src.dir"         value="src" />
 	<property name="build.dir"       value="classes" />
