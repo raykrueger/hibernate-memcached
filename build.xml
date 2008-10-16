@@ -2,7 +2,7 @@
 <project name="hibernate-memcached" default="package" basedir=".">
 
 	<property name="project.title"   value="Hibernate MemCached" />
-	<property name="code.dir"        value="src/com/googlecode/hibernate/memcached" />
+	<property name="code.dir"        value="src/main/java/com/googlecode/hibernate/memcached/" />
 	<property name="doc.dir"         value="doc" />
 	<property name="src.dir"         value="src" />
 	<property name="build.dir"       value="classes" />
@@ -44,11 +44,11 @@
 	<target name="setup">
 		<mkdir dir="hibernate-memcached-${ver}"/>
 		<mkdir dir="hibernate-memcached-${ver}/javadoc"/>
-		<mkdir dir="hibernate-memcached-${ver}/sources/com/googlecode/hibernate/memcached"/>
+		<mkdir dir="hibernate-memcached-${ver}/src/com/googlecode/hibernate/memcached"/>
 		<mkdir dir="hibernate-memcached-${ver}/classes"/>
 
 		<!-- copy source -->
-		<copy todir="hibernate-memcached-${ver}/sources/com/googlecode/hibernate/memcached">
+		<copy todir="hibernate-memcached-${ver}/src/com/googlecode/hibernate/memcached">
 			<fileset dir="${code.dir}" defaultexcludes="true" excludes="**/*.xml **/*.swp **/*.swo"/>
         </copy>
 	</target>
@@ -59,7 +59,7 @@
 			<fileset dir="hibernate-memcached-${ver}/javadoc" />
 		</delete>
 
-		<javadoc sourcepath="hibernate-memcached-${ver}/sources"
+		<javadoc sourcepath="hibernate-memcached-${ver}/src"
 			destdir="hibernate-memcached-${ver}/javadoc"
 			packagenames= "com.googlecode.hibernate.memcached.*"
 			author= "true"
@@ -78,7 +78,7 @@
 
 	<!-- compilation target for packeging operations -->
 	<target name="pkg-compile" depends="clean, setup">
-		<javac debug="yes" srcdir="hibernate-memcached-${ver}/sources" destdir="hibernate-memcached-${ver}/classes" deprecation="true" target="1.5">
+		<javac debug="yes" srcdir="hibernate-memcached-${ver}/src" destdir="hibernate-memcached-${ver}/classes" deprecation="true" target="1.5">
 			<classpath refid="project.class.path"/>
 		</javac>
 	</target>
@@ -86,7 +86,7 @@
 	<target name="jar" depends="pkg-compile, javadoc">
 		<jar compress="yes" jarfile="hibernate-memcached-${ver}/hibernate-memcached-${ver}.jar" basedir="hibernate-memcached-${ver}/classes"/>
 		<jar compress="yes" jarfile="hibernate-memcached-${ver}/hibernate-memcached-${ver}-javadoc.jar" basedir="hibernate-memcached-${ver}/javadoc"/>
-		<jar compress="yes" jarfile="hibernate-memcached-${ver}/hibernate-memcached-${ver}-sources.jar" basedir="hibernate-memcached-${ver}/sources"/>
+		<jar compress="yes" jarfile="hibernate-memcached-${ver}/hibernate-memcached-${ver}-sources.jar" basedir="hibernate-memcached-${ver}/src"/>
     </target>
 
 	<!-- compilation target -->
