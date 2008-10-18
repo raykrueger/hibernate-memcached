@@ -2,6 +2,7 @@ package com.googlecode.hibernate.memcached.dangamemcached;
 
 import com.danga.MemCached.ErrorHandler;
 import com.danga.MemCached.MemCachedClient;
+import com.googlecode.hibernate.memcached.utils.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,15 +30,7 @@ public class SimpleErrorHandler implements ErrorHandler {
 
     public void handleErrorOnGet(MemCachedClient client, Throwable error,
                                  String[] cacheKeys) {
-        StringBuilder keys = new StringBuilder();
-        for (int i = 0; i < cacheKeys.length; i++) {
-            String cacheKey = cacheKeys[i];
-            keys.append(cacheKey);
-            if (i < cacheKeys.length - 1) {
-                keys.append(" ");
-            }
-        }
-        handleErrorOnGet(client, error, keys.toString());
+        handleErrorOnGet(client, error, StringUtils.join(cacheKeys, ", "));
     }
 
     public void handleErrorOnInit(MemCachedClient client, Throwable error) {

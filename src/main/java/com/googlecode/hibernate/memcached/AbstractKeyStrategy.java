@@ -1,6 +1,6 @@
 package com.googlecode.hibernate.memcached;
 
-import org.apache.commons.codec.digest.DigestUtils;
+import com.googlecode.hibernate.memcached.utils.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -46,7 +46,7 @@ public abstract class AbstractKeyStrategy implements KeyStrategy {
 
     protected String truncateKey(String key) {
 
-        String keyHashCode = DigestUtils.md5Hex(key.getBytes());
+        String keyHashCode = StringUtils.md5Hex(key);
 
         log.warn("Encoded key [{}] to md5 hash [{}]. " +
                 "Be sure to set cache region names whenever possible as the names Hibernate generates are really long.",
