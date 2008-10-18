@@ -1,4 +1,5 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.googlecode</groupId>
     <artifactId>hibernate-memcached</artifactId>
@@ -43,7 +44,8 @@
 
     <scm>
         <connection>scm:svn:http://hibernate-memcached.googlecode.com/svn/tags/hibernate-memcached-1.0</connection>
-        <developerConnection>scm:svn:https://hibernate-memcached.googlecode.com/svn/tags/hibernate-memcached-1.0</developerConnection>
+        <developerConnection>scm:svn:https://hibernate-memcached.googlecode.com/svn/tags/hibernate-memcached-1.0
+        </developerConnection>
         <url>http://code.google.com/p/hibernate-memcached/source/browse/tags/hibernate-memcached-1.0</url>
     </scm>
 
@@ -134,6 +136,19 @@
             <artifactId>spy</artifactId>
             <version>2.4</version>
         </dependency>
+
+        <!--
+        Download the whalin client from http://img.whalin.com/memcached/jdk5/log4j/java_memcached-release_2.0.1.jar
+        Execute the following mvn command to place it in your local repository
+        mvn install:install-file -Dfile=java_memcached-release_2.0.1.jar -DgroupId=com.danga -DartifactId=java_memcached -Dversion=2.0.1 -Dpackaging=jar
+        -->
+        <dependency>
+            <groupId>com.danga</groupId>
+            <artifactId>java_memcached</artifactId>
+            <version>2.0.1</version>
+            <scope>provided</scope>
+        </dependency>
+
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>

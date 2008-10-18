@@ -3,11 +3,9 @@ package com.googlecode.hibernate.memcached.dangamemcached;
 import com.danga.MemCached.ErrorHandler;
 import com.danga.MemCached.MemCachedClient;
 import com.danga.MemCached.SockIOPool;
-
 import com.googlecode.hibernate.memcached.Memcache;
 import com.googlecode.hibernate.memcached.MemcacheClientFactory;
 import com.googlecode.hibernate.memcached.PropertiesHelper;
-
 import org.hibernate.cache.CacheException;
 
 /**
@@ -33,17 +31,17 @@ public class DangaMemcacheClientFactory implements MemcacheClientFactory {
     public static final String PROP_SOCKET_TIMEOUT = PROP_PREFIX + "socketTimeout";
     public static final String PROP_SOCKET_CONNECT_TIMEOUT = PROP_PREFIX + "socketConnectTimeout";
 
-    public static final boolean DEFAULT_COMPRESS_ENABLE    = true;
-    public static final String DEFAULT_DEFAULT_ENCODING    = "UTF-8";
-    public static final String DEFAULT_POOL_NAME           = "default";
-    public static final String DEFAULT_ERROR_HANDLER       = "com.googlecode.hibernate.memcached.dangamemcached.SimpleErrorHandler";
-    public static final String DEFAULT_SERVERS             = "localhost:11211";
-    public static final int DEFAULT_INIT_CONN              = 1;
-    public static final int DEFAULT_MIN_CONN               = 1;
-    public static final int DEFAULT_MAX_CONN               = 10;
-    public static final int DEFAULT_MAX_IDLE               = 1000 * 60 * 5; //5 minutes
-    public static final int DEFAULT_MAINT_SLEEP            = 1000 * 30;     //30 seconds
-    public static final int DEFAULT_SOCKET_TIMEOUT         = 1000 * 30;     //30 seconds
+    public static final boolean DEFAULT_COMPRESS_ENABLE = true;
+    public static final String DEFAULT_DEFAULT_ENCODING = "UTF-8";
+    public static final String DEFAULT_POOL_NAME = "default";
+    public static final String DEFAULT_ERROR_HANDLER = "com.googlecode.hibernate.memcached.dangamemcached.SimpleErrorHandler";
+    public static final String DEFAULT_SERVERS = "localhost:11211";
+    public static final int DEFAULT_INIT_CONN = 1;
+    public static final int DEFAULT_MIN_CONN = 1;
+    public static final int DEFAULT_MAX_CONN = 10;
+    public static final int DEFAULT_MAX_IDLE = 1000 * 60 * 5; //5 minutes
+    public static final int DEFAULT_MAINT_SLEEP = 1000 * 30;     //30 seconds
+    public static final int DEFAULT_SOCKET_TIMEOUT = 1000 * 30;     //30 seconds
     public static final int DEFAULT_SOCKET_CONNECT_TIMEOUT = 1000 * 3;      //3 seconds
 
     private PropertiesHelper properties;
@@ -55,37 +53,37 @@ public class DangaMemcacheClientFactory implements MemcacheClientFactory {
     public Memcache createMemcacheClient() throws Exception {
         String poolName = getPoolName();
 
-				// grab an instance of our connection pool
-				SockIOPool pool = SockIOPool.getInstance( poolName );
+        // grab an instance of our connection pool
+        SockIOPool pool = SockIOPool.getInstance(poolName);
 
-				// set the servers and the weights
-				pool.setServers( getServers() );
-				pool.setWeights( getWeights() );
+        // set the servers and the weights
+        pool.setServers(getServers());
+        pool.setWeights(getWeights());
 
-				// set some basic pool settings
-				pool.setInitConn( getInitConn() );
-				pool.setMinConn( getMinConn() );
-				pool.setMaxConn( getMaxConn() );
-				pool.setMaxIdle( getMaxIdle() );
+        // set some basic pool settings
+        pool.setInitConn(getInitConn());
+        pool.setMinConn(getMinConn());
+        pool.setMaxConn(getMaxConn());
+        pool.setMaxIdle(getMaxIdle());
 
-				// set the sleep for the maint thread
-				// it will wake up every x seconds and
-				// maintain the pool size
-				pool.setMaintSleep( getMaintSleep() );
+        // set the sleep for the maint thread
+        // it will wake up every x seconds and
+        // maintain the pool size
+        pool.setMaintSleep(getMaintSleep());
 
-				// set some TCP settings
-				pool.setNagle( false );
-				pool.setSocketTO( getSocketTimeout() );
-				pool.setSocketConnectTO( getSocketConnectTimeout() );
+        // set some TCP settings
+        pool.setNagle(false);
+        pool.setSocketTO(getSocketTimeout());
+        pool.setSocketConnectTO(getSocketConnectTimeout());
 
-				// initialize the connection pool
-				pool.initialize();
+        // initialize the connection pool
+        pool.initialize();
 
         MemCachedClient client =
-            new MemCachedClient(
-                getClassLoader(),
-                getErrorHandler(),
-                poolName);
+                new MemCachedClient(
+                        getClassLoader(),
+                        getErrorHandler(),
+                        poolName);
         client.setCompressEnable(isCompressEnable());
         client.setDefaultEncoding(getDefaultEncoding());
 
@@ -109,25 +107,22 @@ public class DangaMemcacheClientFactory implements MemcacheClientFactory {
     }
 
     public ErrorHandler getErrorHandler() {
-    	  String errorHandlerName =
-    	      properties.get(PROP_ERROR_HANDLER, DEFAULT_ERROR_HANDLER);
+        String errorHandlerName =
+                properties.get(PROP_ERROR_HANDLER, DEFAULT_ERROR_HANDLER);
 
         ErrorHandler errorHandler;
         try {
-        	errorHandler =
-        	    (ErrorHandler)Class.forName(errorHandlerName).newInstance();
-        } catch(ClassNotFoundException e) {
+            errorHandler =
+                    (ErrorHandler) Class.forName(errorHandlerName).newInstance();
+        } catch (ClassNotFoundException e) {
             throw new CacheException(
                     "Unable to find error handler class [" + errorHandlerName + "]");
-        } catch(IllegalAccessException e) {
+        } catch (IllegalAccessException e) {
             throw new CacheException(
-                    "Illegally access error handler class [" + errorHandlerName + "]");
-        } catch(InstantiationException e) {
+                    "Illegally accessed error handler class [" + errorHandlerName + "]");
+        } catch (InstantiationException e) {
             throw new CacheException(
                     "Failed to instantiate error handler class [" + errorHandlerName + "]");
-       } catch(ClassCastException e) {
-            throw new CacheException(
-                    "Invalid error handler class [" + errorHandlerName + "]");
         }
 
         return errorHandler;
@@ -138,21 +133,21 @@ public class DangaMemcacheClientFactory implements MemcacheClientFactory {
     }
 
     public Integer[] getWeights() {
-    	  String[] servers = getServers();
+        String[] servers = getServers();
         Integer[] weights = new Integer[servers.length];
         String weightsValue = properties.get(PROP_WEIGHTS);
 
         if (weightsValue == null || "".equals(weightsValue)) {
-            for(int i = 0 ; i < weights.length; i++)
-				        weights[i] = new Integer(1);
+            for (int i = 0; i < weights.length; i++)
+                weights[i] = 1;
         } else {
             String[] weightsStrings = weightsValue.split(" ");
             if (weightsStrings.length == servers.length) {
-				        for(int i = 0 ; i < weights.length; i++)
-				            weights[i] = new Integer(weightsStrings[i]);
+                for (int i = 0; i < weights.length; i++)
+                    weights[i] = new Integer(weightsStrings[i]);
             } else
                 throw new CacheException(
-                    "Count of weight number mismatch count of server");
+                        "Count of weight number mismatch count of server");
         }
 
         return weights;

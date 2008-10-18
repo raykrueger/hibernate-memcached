@@ -1,15 +1,13 @@
 package com.googlecode.hibernate.memcached.dangamemcached;
 
-import java.util.Calendar;
-import java.util.Date;
-
 import com.danga.MemCached.MemCachedClient;
 import com.danga.MemCached.SockIOPool;
-
 import com.googlecode.hibernate.memcached.Memcache;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.Calendar;
+import java.util.Date;
 
 /**
  * DOCUMENT ME!
@@ -46,9 +44,9 @@ public class DangaMemcache implements Memcache {
     public void set(String key, int cacheTimeSeconds, Object o) {
         log.debug("MemCachedClient.set({})", key);
         try {
-		        Calendar calendar = Calendar.getInstance();
-		        calendar.setTime(new Date());
-		        calendar.add(Calendar.SECOND, cacheTimeSeconds);
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTime(new Date());
+            calendar.add(Calendar.SECOND, cacheTimeSeconds);
 
             memcachedClient.set(key, o, calendar.getTime());
         } catch (Exception e) {
