@@ -32,6 +32,10 @@ public class StringUtils {
     }
 
     public static String md5Hex(String data) {
+        if (data == null) {
+            throw new IllegalArgumentException("data must not be null");
+        }
+
         MessageDigest digest;
         try {
             digest = MessageDigest.getInstance("MD5");

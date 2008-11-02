@@ -30,12 +30,6 @@
             <url>http://raykrueger.googlecode.com/svn/repository</url>
         </repository>
         <repository>
-            <id>dustin</id>
-            <name>dustin</name>
-            <url>http://bleu.west.spy.net/~dustin/repo</url>
-            <layout>legacy</layout>
-        </repository>
-        <repository>
             <id>maven2-repository</id>
             <name>Java.net Repository for Maven</name>
             <url>http://download.java.net/maven/2/</url>
@@ -137,11 +131,6 @@
             <version>2.4</version>
         </dependency>
 
-        <!--
-        Download the whalin client from http://img.whalin.com/memcached/jdk5/log4j/java_memcached-release_2.0.1.jar
-        Execute the following mvn command to place it in your local repository
-        mvn install:install-file -Dfile=java_memcached-release_2.0.1.jar -DgroupId=com.danga -DartifactId=java_memcached -Dversion=2.0.1 -Dpackaging=jar
-        -->
         <dependency>
             <groupId>com.danga</groupId>
             <artifactId>java_memcached</artifactId>
