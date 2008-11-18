@@ -5,17 +5,14 @@ package com.googlecode.hibernate.memcached
  *
  * @author Ray Krueger
  */
-class StringKeyStrategyTest extends BaseTestCase {
+class StringKeyStrategyTest extends AbstractKeyStrategyTestCase {
 
-    StringKeyStrategy strategy
-
-    protected void setUp() {
-        strategy = new StringKeyStrategy()
+    public KeyStrategy getKeyStrategy() {
+        new StringKeyStrategy()
     }
 
     void test() {
-        String key = strategy.toKey("test", 0, "boing")
-        assertEquals("test:0:boing", key)
+        assert_cache_key_equals "test:0:boing", "test", 0, "boing"
     }
 
     void test_config() {
@@ -25,27 +22,21 @@ class StringKeyStrategyTest extends BaseTestCase {
     }
 
     void test_null_region() {
-        String key = strategy.toKey(null, 0, "boing")
-        assertEquals("null:0:boing", key)
+        assert_cache_key_equals "null:0:boing", null, 0, "boing"
     }
 
     void test_null_key_does_not_validate() {
-        shouldFailWithCause(IllegalArgumentException.class) {
-            strategy.toKey(null, 0, null)
-        }
+        assert_null_key_does_not_validate()
     }
 
     void test_spaces() {
-        String key = strategy.toKey("I have spaces", 0, "so do I")
-        assertEquals("Ihavespaces:0:sodoI", key)
+        assert_cache_key_equals "Ihavespaces:0:sodoI", "I have spaces", 0, "so do I"
     }
 
     void test_really_long_keys_get_truncated() {
         String regionName = ""
-
         250.times {regionName += "x"}
-
-        assertEquals("fe009b44a903277f4b8e07f2cb03e96f", strategy.toKey(regionName, 0, "blah blah blah"))
+        assert_cache_key_equals "fe009b44a903277f4b8e07f2cb03e96f", regionName, 0, "blah blah blah"
     }
 
 }

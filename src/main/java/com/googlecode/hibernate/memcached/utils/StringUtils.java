@@ -36,14 +36,22 @@ public class StringUtils {
             throw new IllegalArgumentException("data must not be null");
         }
 
-        MessageDigest digest;
-        try {
-            digest = MessageDigest.getInstance("MD5");
-        } catch (NoSuchAlgorithmException e) {
-            throw new RuntimeException(e);
+        byte[] bytes = digest("MD5", data);
+
+        return toHexString(bytes);
+    }
+
+    public static String sha1Hex(String data) {
+        if (data == null) {
+            throw new IllegalArgumentException("data must not be null");
         }
 
-        byte[] bytes = digest.digest(data.getBytes());
+        byte[] bytes = digest("SHA1", data);
+
+        return toHexString(bytes);
+    }
+
+    private static String toHexString(byte[] bytes) {
         int l = bytes.length;
 
         char[] out = new char[l << 1];
@@ -54,5 +62,17 @@ public class StringUtils {
         }
 
         return new String(out);
+    }
+
+    private static byte[] digest(String algorithm, String data) {
+        MessageDigest digest;
+        try {
+            digest = MessageDigest.getInstance(algorithm);
+        } catch (NoSuchAlgorithmException e) {
+            throw new RuntimeException(e);
+        }
+
+        byte[] bytes = digest.digest(data.getBytes());
+        return bytes;
     }
 }

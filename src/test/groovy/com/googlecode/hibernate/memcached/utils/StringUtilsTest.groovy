@@ -20,6 +20,10 @@ class StringUtilsTest extends BaseTestCase {
         assertEquals "eae4b23daa656ea031c2b90106304cf2", StringUtils.md5Hex("boosh! and/or kakow")
     }
 
+    void test_sha1_hex() {
+        assertEquals "f18f2dcf68655fe9112ac57c62931cc490c3397c", StringUtils.sha1Hex("boosh! and/or kakow")
+    }
+
     void test_null_md5_hex () {
         shouldFail(IllegalArgumentException) {
             StringUtils.md5Hex(null)
