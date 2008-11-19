@@ -2,7 +2,9 @@ package com.googlecode.hibernate.memcached.dangamemcached;
 
 import com.danga.MemCached.MemCachedClient;
 import com.danga.MemCached.SockIOPool;
+import com.googlecode.hibernate.memcached.LoggingMemcacheExceptionHandler;
 import com.googlecode.hibernate.memcached.Memcache;
+import com.googlecode.hibernate.memcached.MemcacheExceptionHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -21,6 +23,8 @@ public class DangaMemcache implements Memcache {
     private final MemCachedClient memcachedClient;
     private final String poolName;
 
+    private MemcacheExceptionHandler exceptionHandler = new LoggingMemcacheExceptionHandler();
+
     /* Constructor
      *
      * @param memcachedClient Instance of Danga's MemCachedClient
@@ -36,7 +40,7 @@ public class DangaMemcache implements Memcache {
             log.debug("MemCachedClient.get({})", key);
             return memcachedClient.get(key);
         } catch (Exception e) {
-            log.warn("Cache 'get' timed out for key [" + key + "]", e);
+            exceptionHandler.handleErrorOnGet(key, e);
         }
         return null;
     }
@@ -50,7 +54,7 @@ public class DangaMemcache implements Memcache {
 
             memcachedClient.set(key, o, calendar.getTime());
         } catch (Exception e) {
-            log.warn("Cache 'set' timed out for key [" + key + "]", e);
+            exceptionHandler.handleErrorOnSet(key, cacheTimeSeconds, o, e);
         }
     }
 
@@ -58,7 +62,7 @@ public class DangaMemcache implements Memcache {
         try {
             memcachedClient.delete(key);
         } catch (Exception e) {
-            log.warn("Cache 'delete' timed out for key [" + key + "]", e);
+            exceptionHandler.handleErrorOnDelete(key, e);
         }
     }
 
@@ -71,7 +75,7 @@ public class DangaMemcache implements Memcache {
             if (-1 == rv)
                 memcachedClient.addOrIncr(key, startingValue);
         } catch (Exception e) {
-            log.warn("Cache 'incr' timed out for key [" + key + "]", e);
+            exceptionHandler.handleErrorOnIncr(key, factor, startingValue, e);
         }
     }
 
@@ -81,5 +85,9 @@ public class DangaMemcache implements Memcache {
         //Danga's MemCachedClient does not provide a method to shutdown or
         //close it, let's shutdown its SockIOPool instead
         SockIOPool.getInstance(poolName).shutDown();
+    }
+
+    public void setExceptionHandler(MemcacheExceptionHandler exceptionHandler) {
+        this.exceptionHandler = exceptionHandler;
     }
 }
