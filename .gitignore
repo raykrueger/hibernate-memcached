@@ -3,3 +3,4 @@ hibernate-memcached.iws
 hibernate-memcached.iml
 target
 release.properties
+pom.xml.releaseBackup
