@@ -4,7 +4,7 @@
     <groupId>com.googlecode</groupId>
     <artifactId>hibernate-memcached</artifactId>
     <packaging>jar</packaging>
-    <version>1.0</version>
+    <version>1.1-SNAPSHOT</version>
     <name>hibernate-memcached</name>
     <url>http://code.google.com/p/hibernate-memcached/</url>
 
@@ -37,10 +37,9 @@
     </repositories>
 
     <scm>
-        <connection>scm:svn:http://hibernate-memcached.googlecode.com/svn/tags/hibernate-memcached-1.0</connection>
-        <developerConnection>scm:svn:https://hibernate-memcached.googlecode.com/svn/tags/hibernate-memcached-1.0
-        </developerConnection>
-        <url>http://code.google.com/p/hibernate-memcached/source/browse/tags/hibernate-memcached-1.0</url>
+        <connection>scm:git:git://github.com/raykrueger/hibernate-memcached.git</connection>
+        <developerConnection>scm:git:git://github.com/raykrueger/hibernate-memcached.git</developerConnection>
+        <url>http://github.com/raykrueger/hibernate-memcached/</url>
     </scm>
 
     <distributionManagement>
@@ -130,18 +129,16 @@
             <artifactId>spy</artifactId>
             <version>2.4</version>
         </dependency>
-
         <dependency>
             <groupId>com.danga</groupId>
             <artifactId>java_memcached</artifactId>
             <version>2.0.1</version>
             <scope>provided</scope>
         </dependency>
-
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
-            <version>1.5.0</version>
+            <version>1.5.6</version>
         </dependency>
         <dependency>
             <groupId>org.hibernate</groupId>
@@ -158,7 +155,7 @@
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-log4j12</artifactId>
-            <version>1.5.0</version>
+            <version>1.5.6</version>
             <scope>test</scope>
         </dependency>
         <dependency>
