@@ -11,6 +11,7 @@ public class ContactIntegrationTest extends AbstractHibernateTestCase {
 
     Contact ray;
 
+    @Override
     protected void setupInTransaction() {
 
         ray = new Contact();
@@ -22,6 +23,7 @@ public class ContactIntegrationTest extends AbstractHibernateTestCase {
         session.clear();
     }
 
+    @Override
     protected Properties getConfigProperties() {
         Properties props = new Properties();
         props.setProperty("hibernate.cache.use_query_cache", "true");

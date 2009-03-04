@@ -52,6 +52,7 @@ public abstract class AbstractHibernateTestCase extends BaseTestCase {
     void setupBeforeTransaction() {
     }
 
+    @Override
     protected void setUp() {
         setupBeforeTransaction();
         SessionFactory sessionFactory = getConfiguration().buildSessionFactory();
@@ -66,6 +67,7 @@ public abstract class AbstractHibernateTestCase extends BaseTestCase {
     protected void tearDownInTransaction() {
     }
 
+    @Override
     protected void tearDown() {
         try {
             tearDownInTransaction();
