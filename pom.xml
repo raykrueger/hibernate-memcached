@@ -149,12 +149,7 @@
         <dependency>
             <groupId>spy</groupId>
             <artifactId>memcached</artifactId>
-            <version>2.2</version>
-        </dependency>
-        <dependency>
-            <groupId>spy</groupId>
-            <artifactId>spy</artifactId>
-            <version>2.4</version>
+            <version>2.3-RC1</version>
         </dependency>
         <dependency>
             <groupId>com.danga</groupId>
