@@ -5,11 +5,13 @@ import com.danga.MemCached.SockIOPool;
 import com.googlecode.hibernate.memcached.LoggingMemcacheExceptionHandler;
 import com.googlecode.hibernate.memcached.Memcache;
 import com.googlecode.hibernate.memcached.MemcacheExceptionHandler;
+import com.googlecode.hibernate.memcached.utils.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Map;
 
 /**
  * DOCUMENT ME!
@@ -41,6 +43,15 @@ public class DangaMemcache implements Memcache {
             return memcachedClient.get(key);
         } catch (Exception e) {
             exceptionHandler.handleErrorOnGet(key, e);
+        }
+        return null;
+    }
+
+    public Map<String, Object> getMulti(String... keys) {
+        try {
+            return memcachedClient.getMulti(keys);
+        } catch (Exception e) {
+            exceptionHandler.handleErrorOnGet(StringUtils.join(keys, ", "), e);
         }
         return null;
     }

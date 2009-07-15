@@ -3,9 +3,12 @@ package com.googlecode.hibernate.memcached.spymemcached;
 import com.googlecode.hibernate.memcached.LoggingMemcacheExceptionHandler;
 import com.googlecode.hibernate.memcached.Memcache;
 import com.googlecode.hibernate.memcached.MemcacheExceptionHandler;
+import com.googlecode.hibernate.memcached.utils.StringUtils;
 import net.spy.memcached.MemcachedClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.Map;
 
 /**
  * DOCUMENT ME!
@@ -29,6 +32,15 @@ public class SpyMemcache implements Memcache {
             return memcachedClient.get(key);
         } catch (Exception e) {
             exceptionHandler.handleErrorOnGet(key, e);
+        }
+        return null;
+    }
+
+    public Map<String, Object> getMulti(String... keys) {
+        try {
+            return memcachedClient.getBulk(keys);
+        } catch (Exception e) {
+            exceptionHandler.handleErrorOnGet(StringUtils.join(keys, ", "), e);
         }
         return null;
     }

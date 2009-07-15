@@ -33,4 +33,7 @@ class MockMemcached implements Memcache {
     }
 
 
+  public Map<String, Object> getMulti(String[] keys) {
+    return cache.findAll {key, value -> keys.toList().contains(key)}
+  }
 }

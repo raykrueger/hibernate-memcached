@@ -1,5 +1,7 @@
 package com.googlecode.hibernate.memcached;
 
+import java.util.Map;
+
 /**
  * Interface to abstract memcache operations.
  *
@@ -8,6 +10,8 @@ package com.googlecode.hibernate.memcached;
 public interface Memcache {
 
     Object get(String key);
+
+    Map<String, Object> getMulti(String... keys);
 
     void set(String key, int cacheTimeSeconds, Object o);
 
