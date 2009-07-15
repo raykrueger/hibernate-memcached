@@ -4,10 +4,7 @@ import com.googlecode.hibernate.memcached.Config;
 import com.googlecode.hibernate.memcached.Memcache;
 import com.googlecode.hibernate.memcached.MemcacheClientFactory;
 import com.googlecode.hibernate.memcached.PropertiesHelper;
-import net.spy.memcached.AddrUtil;
-import net.spy.memcached.DefaultConnectionFactory;
-import net.spy.memcached.HashAlgorithm;
-import net.spy.memcached.MemcachedClient;
+import net.spy.memcached.*;
 
 /**
  * Parses hibernate properties to produce a MemcachedClient.<br/>
@@ -22,6 +19,7 @@ public class SpyMemcacheClientFactory implements MemcacheClientFactory {
     public static final String PROP_READ_BUFFER_SIZE = Config.PROP_PREFIX + "readBufferSize";
     public static final String PROP_OPERATION_TIMEOUT = Config.PROP_PREFIX + "operationTimeout";
     public static final String PROP_HASH_ALGORITHM = Config.PROP_PREFIX + "hashAlgorithm";
+    public static final String PROP_CONNECTION_FACTORY = Config.PROP_PREFIX + "connectionFactory";
     private final PropertiesHelper properties;
 
     public SpyMemcacheClientFactory(PropertiesHelper properties) {
@@ -30,19 +28,58 @@ public class SpyMemcacheClientFactory implements MemcacheClientFactory {
 
     public Memcache createMemcacheClient() throws Exception {
 
-        DefaultConnectionFactory defaultConnectionFactory =
-                new DefaultConnectionFactory(
-                        getOperationQueueLength(),
-                        getReadBufferSize(),
-                        getHashAlgorithm()) {
+        ConnectionFactory connectionFactory = getConnectionFactory();
 
-                    public long getOperationTimeout() {
-                        return getOperationTimeoutMillis();
-                    }
-                };
-
-        MemcachedClient client = new MemcachedClient(defaultConnectionFactory, AddrUtil.getAddresses(getServerList()));
+        MemcachedClient client = new MemcachedClient(connectionFactory, AddrUtil.getAddresses(getServerList()));
         return new SpyMemcache(client);
+    }
+
+    protected ConnectionFactory getConnectionFactory() {
+
+        if (connectionFactoryNameEquals(DefaultConnectionFactory.class)) {
+            return buildDefaultConnectionFactory();
+        }
+
+        if (connectionFactoryNameEquals(KetamaConnectionFactory.class)) {
+            return buildKetamaConnectionFactory();
+        }
+
+        if (connectionFactoryNameEquals(BinaryConnectionFactory.class)) {
+            return buildBinaryConnectionFactory();
+        }
+
+        throw new IllegalArgumentException("Unsupported " + PROP_CONNECTION_FACTORY + " value: " + getConnectionFactoryName());
+    }
+
+    private boolean connectionFactoryNameEquals(Class<?> cls) {
+        return cls.getSimpleName().equals(getConnectionFactoryName());
+    }
+
+    private DefaultConnectionFactory buildDefaultConnectionFactory() {
+        return new DefaultConnectionFactory(getOperationQueueLength(), getReadBufferSize(), getHashAlgorithm()) {
+            @Override
+            public long getOperationTimeout() {
+                return getOperationTimeoutMillis();
+            }
+        };
+    }
+
+    private KetamaConnectionFactory buildKetamaConnectionFactory() {
+        return new KetamaConnectionFactory() {
+            @Override
+            public long getOperationTimeout() {
+                return getOperationTimeoutMillis();
+            }
+        };
+    }
+
+    private BinaryConnectionFactory buildBinaryConnectionFactory() {
+        return new BinaryConnectionFactory(getOperationQueueLength(), getReadBufferSize(), getHashAlgorithm()) {
+            @Override
+            public long getOperationTimeout() {
+                return getOperationTimeoutMillis();
+            }
+        };
     }
 
     public String getServerList() {
@@ -67,6 +104,15 @@ public class SpyMemcacheClientFactory implements MemcacheClientFactory {
     public HashAlgorithm getHashAlgorithm() {
         return properties.getEnum(PROP_HASH_ALGORITHM,
                 HashAlgorithm.class,
-                HashAlgorithm.KETAMA_HASH);
+                HashAlgorithm.NATIVE_HASH);
+    }
+
+    public String getConnectionFactoryName() {
+        return properties.get(PROP_CONNECTION_FACTORY,
+                DefaultConnectionFactory.class.getSimpleName());
+    }
+
+    protected PropertiesHelper getProperties() {
+        return properties;
     }
 }
