@@ -2,7 +2,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.googlecode</groupId>
     <artifactId>hibernate-memcached</artifactId>
-    <version>1.2</version>
+    <version>1.3-SNAPSHOT</version>
     <name>hibernate-memcached</name>
     <description>A library for using Memcached as a second level distributed cache in Hibernate.</description>
     <url>http://code.google.com/p/hibernate-memcached/</url>
