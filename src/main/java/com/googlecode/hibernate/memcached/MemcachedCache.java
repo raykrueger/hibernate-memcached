@@ -107,11 +107,11 @@ public class MemcachedCache implements Cache {
 
     private Object memcacheGet(Object key) {
         String objectKey = toKey(key);
-        String dogpileKey = dogpileTokenKey(objectKey);
 
         Map<String, Object> multi;
 
         if (dogpilePreventionEnabled) {
+            String dogpileKey = dogpileTokenKey(objectKey);
             log.debug("Checking dogpile key: [{}]", dogpileKey);
 
             log.debug("Memcache.getMulti({}, {})", objectKey, dogpileKey);
@@ -121,9 +121,8 @@ public class MemcachedCache implements Cache {
                 log.debug("Dogpile key ({}) not found updating token and returning null", dogpileKey);
                 memcache.set(dogpileKey, cacheTimeSeconds, DOGPILE_TOKEN);
                 return null;
-            } else {
-                log.debug("Dogpile token found for key ({}), getting cached object", dogpileKey);
             }
+            log.debug("Dogpile token found for key ({}), getting cached object", dogpileKey);
         } else {
             log.debug("Memcache.get({})", objectKey);
             multi = memcache.getMulti(objectKey);
@@ -235,7 +234,7 @@ public class MemcachedCache implements Cache {
             Object value = memcache.get(clearIndexKey);
             if (value != null) {
                 if (value instanceof String) {
-                    index = Long.parseLong((String) value);
+                    index = Long.valueOf((String) value);
                 } else if (value instanceof Long) {
                     index = (Long) value;
                 } else {

@@ -166,10 +166,10 @@ public class MemcachedCacheProvider implements CacheProvider {
                     .getConstructor(PropertiesHelper.class);
         } catch (ClassNotFoundException e) {
             throw new CacheException(
-                    "Unable to find factory class [" + factoryClassName + "]");
+                    "Unable to find factory class [" + factoryClassName + "]", e);
         } catch (NoSuchMethodException e) {
             throw new CacheException(
-                    "Unable to find PropertiesHelper constructor for factory class [" + factoryClassName + "]");
+                    "Unable to find PropertiesHelper constructor for factory class [" + factoryClassName + "]", e);
         }
 
         MemcacheClientFactory clientFactory;
@@ -177,7 +177,7 @@ public class MemcachedCacheProvider implements CacheProvider {
             clientFactory = (MemcacheClientFactory) constructor.newInstance(config.getPropertiesHelper());
         } catch (Exception e) {
             throw new CacheException(
-                    "Unable to instantiate factory class [" + factoryClassName + "]");
+                    "Unable to instantiate factory class [" + factoryClassName + "]", e);
         }
 
         return clientFactory;

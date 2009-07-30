@@ -116,13 +116,13 @@ public class DangaMemcacheClientFactory implements MemcacheClientFactory {
                     (ErrorHandler) Class.forName(errorHandlerName).newInstance();
         } catch (ClassNotFoundException e) {
             throw new CacheException(
-                    "Unable to find error handler class [" + errorHandlerName + "]");
+                    "Unable to find error handler class [" + errorHandlerName + "]", e);
         } catch (IllegalAccessException e) {
             throw new CacheException(
-                    "Illegally accessed error handler class [" + errorHandlerName + "]");
+                    "Illegally accessed error handler class [" + errorHandlerName + "]", e);
         } catch (InstantiationException e) {
             throw new CacheException(
-                    "Failed to instantiate error handler class [" + errorHandlerName + "]");
+                    "Failed to instantiate error handler class [" + errorHandlerName + "]", e);
         }
 
         return errorHandler;

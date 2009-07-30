@@ -72,7 +72,6 @@ public class StringUtils {
             throw new RuntimeException(e);
         }
 
-        byte[] bytes = digest.digest(data.getBytes());
-        return bytes;
+        return digest.digest(data.getBytes());
     }
 }
