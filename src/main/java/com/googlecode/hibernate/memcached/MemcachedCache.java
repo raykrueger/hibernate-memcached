@@ -108,24 +108,28 @@ public class MemcachedCache implements Cache {
     private Object memcacheGet(Object key) {
         String objectKey = toKey(key);
 
-        Map<String, Object> multi;
-
         if (dogpilePreventionEnabled) {
-            String dogpileKey = dogpileTokenKey(objectKey);
-            log.debug("Checking dogpile key: [{}]", dogpileKey);
+            return getUsingDogpilePrevention(objectKey);
 
-            log.debug("Memcache.getMulti({}, {})", objectKey, dogpileKey);
-            multi = memcache.getMulti(dogpileKey, objectKey);
-
-            if (multi.get(dogpileKey) == null) {
-                log.debug("Dogpile key ({}) not found updating token and returning null", dogpileKey);
-                memcache.set(dogpileKey, cacheTimeSeconds, DOGPILE_TOKEN);
-                return null;
-            }
-            log.debug("Dogpile token found for key ({}), getting cached object", dogpileKey);
         } else {
             log.debug("Memcache.get({})", objectKey);
-            multi = memcache.getMulti(objectKey);
+            return memcache.get(objectKey);
+        }
+    }
+
+    private Object getUsingDogpilePrevention(String objectKey) {
+        Map<String, Object> multi;
+
+        String dogpileKey = dogpileTokenKey(objectKey);
+        log.debug("Checking dogpile key: [{}]", dogpileKey);
+
+        log.debug("Memcache.getMulti({}, {})", objectKey, dogpileKey);
+        multi = memcache.getMulti(dogpileKey, objectKey);
+
+        if ((multi == null) || (multi.get(dogpileKey) == null)) {
+            log.debug("Dogpile key ({}) not found updating token and returning null", dogpileKey);
+            memcache.set(dogpileKey, cacheTimeSeconds, DOGPILE_TOKEN);
+            return null;
         }
 
         return multi.get(objectKey);
