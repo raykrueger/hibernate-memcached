@@ -223,7 +223,7 @@ public class MemcachedCache implements Cache {
         return -1;
     }
 
-    public Map toMap() {
+    public Map<?,?> toMap() {
         throw new UnsupportedOperationException();
     }
 

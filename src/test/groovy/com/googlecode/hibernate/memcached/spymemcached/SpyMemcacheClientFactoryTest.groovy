@@ -25,8 +25,9 @@ class SpyMemcacheClientFactoryTest extends BaseTestCase {
         properties.setProperty "hibernate.memcached.operationQueueLength", "8192"
         properties.setProperty "hibernate.memcached.readBufferLength", "8192"
         properties.setProperty "hibernate.memcached.operationTimeout", "5000"
+		properties.setProperty "hibernate.memcached.daemonMode", "true"
 
-        SpyMemcacheClientFactory factory = new SpyMemcacheClientFactory(new PropertiesHelper(new Properties()))
+        SpyMemcacheClientFactory factory = new SpyMemcacheClientFactory(new PropertiesHelper(properties))
         client = factory.createMemcacheClient()
         assert client
     }

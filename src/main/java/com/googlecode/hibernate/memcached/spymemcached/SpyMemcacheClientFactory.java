@@ -20,6 +20,7 @@ public class SpyMemcacheClientFactory implements MemcacheClientFactory {
     public static final String PROP_OPERATION_TIMEOUT = Config.PROP_PREFIX + "operationTimeout";
     public static final String PROP_HASH_ALGORITHM = Config.PROP_PREFIX + "hashAlgorithm";
     public static final String PROP_CONNECTION_FACTORY = Config.PROP_PREFIX + "connectionFactory";
+    public static final String PROP_DAEMON_MODE = Config.PROP_PREFIX + "daemonMode";
     private final PropertiesHelper properties;
 
     public SpyMemcacheClientFactory(PropertiesHelper properties) {
@@ -61,6 +62,11 @@ public class SpyMemcacheClientFactory implements MemcacheClientFactory {
             public long getOperationTimeout() {
                 return getOperationTimeoutMillis();
             }
+
+            @Override
+            public boolean isDaemon() {
+                return isDaemonMode();
+            }
         };
     }
 
@@ -70,6 +76,11 @@ public class SpyMemcacheClientFactory implements MemcacheClientFactory {
             public long getOperationTimeout() {
                 return getOperationTimeoutMillis();
             }
+
+            @Override
+            public boolean isDaemon() {
+                return isDaemonMode();
+            }
         };
     }
 
@@ -78,6 +89,11 @@ public class SpyMemcacheClientFactory implements MemcacheClientFactory {
             @Override
             public long getOperationTimeout() {
                 return getOperationTimeoutMillis();
+            }
+
+            @Override
+            public boolean isDaemon() {
+                return isDaemonMode();
             }
         };
     }
@@ -101,6 +117,10 @@ public class SpyMemcacheClientFactory implements MemcacheClientFactory {
                 DefaultConnectionFactory.DEFAULT_OPERATION_TIMEOUT);
     }
 
+    public boolean isDaemonMode() {
+        return properties.getBoolean(PROP_DAEMON_MODE, false);
+    }
+    
     public HashAlgorithm getHashAlgorithm() {
         return properties.getEnum(PROP_HASH_ALGORITHM,
                 HashAlgorithm.class,

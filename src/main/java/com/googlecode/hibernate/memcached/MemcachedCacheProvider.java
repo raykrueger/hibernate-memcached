@@ -160,7 +160,7 @@ public class MemcachedCacheProvider implements CacheProvider {
     protected MemcacheClientFactory getMemcachedClientFactory(Config config) {
         String factoryClassName = config.getMemcachedClientFactoryName();
 
-        Constructor constructor;
+        Constructor<?> constructor;
         try {
             constructor = Class.forName(factoryClassName)
                     .getConstructor(PropertiesHelper.class);
