@@ -12,11 +12,11 @@ class Sha1KeyStrategyTest extends AbstractKeyStrategyTestCase {
     }
 
     void test() {
-        assert_cache_key_equals "5c2adf57badcd5d923228b96dd1aee3bf0d5bf2c", "test", 0, "boing"
+        assert_cache_key_equals "cd23e26dd7ab1d052e1c0a04daa27a03f6cd5d1c", "test", 0, "boing"
     }
 
     void test_null_region() {
-        assert_cache_key_equals "a0e96499b9522edc2807f4189e1cfdd65a4dad0d", null, 0, "boing"
+        assert_cache_key_equals "6afcec5614479d46a1ec6d73dabbc2cea154da3c", null, 0, "boing"
     }
 
     void test_null_key_does_not_validate() {
@@ -24,13 +24,13 @@ class Sha1KeyStrategyTest extends AbstractKeyStrategyTestCase {
     }
 
     void test_spaces() {
-        assert_cache_key_equals "3344a9dadb9f405a39924d593592be1bf400e978", "I have spaces", 0, "so do I"
+        assert_cache_key_equals "949b2a6fce917d85bd56e6197c93b3affa694e50", "I have spaces", 0, "so do I"
     }
 
     void test_really_long_keys_get_truncated() {
         String regionName = ""
         250.times {regionName += "x"}
-        assert_cache_key_equals "3c64cd962343bc26ea73c78ba59eeed88491f439", regionName, 0, "blah blah blah"
+        assert_cache_key_equals "7f00c6faf1fefaf62cabb512285cc60ce641d5c8", regionName, 0, "blah blah blah"
     }
 
 }

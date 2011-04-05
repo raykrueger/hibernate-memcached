@@ -27,10 +27,12 @@ class HashCodeKeyStrategyTest extends AbstractKeyStrategyTestCase {
         assert_cache_key_equals "Ihavespaces:0:-2100783816", "I have spaces", 0, "so do I"
     }
 
-    void test_really_long_keys_get_truncated() {
+    void test_really_long_key_throws_exception() {
         String regionName = ""
         250.times {regionName += "x"}
-        assert_cache_key_equals "e2e82011e3d56dd6be564fdcb72a8d64", regionName, 0, "blah blah blah"
+        shouldFail(IllegalArgumentException) {
+          getKeyStrategy().toKey(regionName, 0, "blah blah blah")
+        }
     }
 
 }
