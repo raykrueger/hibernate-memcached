@@ -22,7 +22,7 @@ class MemcachedProviderTest extends BaseTestCase {
         //assert Defaults
         assertFalse(cache.isClearSupported())
         assertEquals(300, cache.getCacheTimeSeconds())
-        assertEquals HashCodeKeyStrategy.class, cache.getKeyStrategy().class
+        assertEquals Sha1KeyStrategy.class, cache.getKeyStrategy().class
     }
 
     void test_region_properties() {

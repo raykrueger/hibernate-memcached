@@ -47,7 +47,7 @@ public class Config {
 
     public String getKeyStrategyName(String cacheRegion) {
         String globalKeyStrategy = props.get(PROP_PREFIX + KEY_STRATEGY,
-                HashCodeKeyStrategy.class.getName());
+                Sha1KeyStrategy.class.getName());
         return props.get(cacheRegionPrefix(cacheRegion) + KEY_STRATEGY, globalKeyStrategy);
     }
 
