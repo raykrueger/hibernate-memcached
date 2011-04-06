@@ -42,7 +42,7 @@ and AbstractKeyStrategy have not changed at all. If you implemented/extended tho
   * Commit, do not mess with pom.xml, version, or history. (if you want to have your own version, that is fine but bump version in a commit by itself I can ignore when I pull)
   * Send me a pull request. Bonus points for topic branches.
 
-[1]: blob/master/src/main/java/com/googlecode/hibernate/memcached/HashCodeKeyStrategy.java
-[2]: blob/master/src/main/java/com/googlecode/hibernate/memcached/StringKeyStrategy.java
-[3]: blob/master/src/main/java/com/googlecode/hibernate/memcached/Sha1KeyStrategy.java
-[4]: blob/master/src/main/java/com/googlecode/hibernate/memcached/Md5KeyStrategy.java
+[1]: hibernate-memcached/blob/master/src/main/java/com/googlecode/hibernate/memcached/HashCodeKeyStrategy.java
+[2]: hibernate-memcached/blob/master/src/main/java/com/googlecode/hibernate/memcached/StringKeyStrategy.java
+[3]: hibernate-memcached/blob/master/src/main/java/com/googlecode/hibernate/memcached/Sha1KeyStrategy.java
+[4]: hibernate-memcached/blob/master/src/main/java/com/googlecode/hibernate/memcached/Md5KeyStrategy.java
