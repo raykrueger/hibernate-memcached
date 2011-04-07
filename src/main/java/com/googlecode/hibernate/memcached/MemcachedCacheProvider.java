@@ -37,7 +37,7 @@ import java.util.Properties;
  * <td>Space delimited list of memcached instances in host:port format</td></tr>
  * <tr><td>hibernate.memcached.cacheTimeSeconds</td><td>300</td>
  * <td>The default number of seconds items should be cached. Can be overriden at the regon level.</td></tr>
- * <tr><td>hibernate.memcached.keyStrategy</td><td>{@link HashCodeKeyStrategy}</td>
+ * <tr><td>hibernate.memcached.keyStrategy</td><td>{@link Sha1KeyStrategy}</td>
  * <td>Sets the strategy class to to use for generating cache keys.
  * Must provide a class name that implements {@link com.googlecode.hibernate.memcached.KeyStrategy}</td></tr>
  * <tr><td>hibernate.memcached.readBufferSize</td>

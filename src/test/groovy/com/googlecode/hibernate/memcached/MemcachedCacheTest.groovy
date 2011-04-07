@@ -25,6 +25,7 @@ class MemcachedCacheTest extends BaseTestCase {
     void test_dogpile_cache_miss() {
         MockMemcached mockCache = new MockMemcached()
         cache = new MemcachedCache("region", mockCache)
+        cache.setKeyStrategy(new HashCodeKeyStrategy());
         cache.dogpilePreventionEnabled = true
         cache.cacheTimeSeconds = 1
         cache.dogpilePreventionExpirationFactor = 2
@@ -39,6 +40,7 @@ class MemcachedCacheTest extends BaseTestCase {
     void test_dogpile_cache_hit() {
         MockMemcached mockCache = new MockMemcached()
         cache = new MemcachedCache("region", mockCache)
+        cache.setKeyStrategy(new HashCodeKeyStrategy());
         cache.dogpilePreventionEnabled = true
         cache.cacheTimeSeconds = 1
         cache.dogpilePreventionExpirationFactor = 2

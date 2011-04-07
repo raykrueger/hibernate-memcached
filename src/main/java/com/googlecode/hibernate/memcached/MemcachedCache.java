@@ -54,7 +54,7 @@ public class MemcachedCache implements Cache {
     private final String clearIndexKey;
     private int cacheTimeSeconds = 300;
     private boolean clearSupported = false;
-    private KeyStrategy keyStrategy = new HashCodeKeyStrategy();
+    private KeyStrategy keyStrategy = new Sha1KeyStrategy();
     private boolean dogpilePreventionEnabled = false;
     private double dogpilePreventionExpirationFactor = 2;
 
