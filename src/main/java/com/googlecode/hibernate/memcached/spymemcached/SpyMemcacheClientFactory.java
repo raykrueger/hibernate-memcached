@@ -1,10 +1,19 @@
 package com.googlecode.hibernate.memcached.spymemcached;
 
+import net.spy.memcached.AddrUtil;
+import net.spy.memcached.BinaryConnectionFactory;
+import net.spy.memcached.ConnectionFactory;
+import net.spy.memcached.DefaultConnectionFactory;
+import net.spy.memcached.HashAlgorithm;
+import net.spy.memcached.KetamaConnectionFactory;
+import net.spy.memcached.MemcachedClient;
+import net.spy.memcached.auth.AuthDescriptor;
+import net.spy.memcached.auth.PlainCallbackHandler;
+
 import com.googlecode.hibernate.memcached.Config;
 import com.googlecode.hibernate.memcached.Memcache;
 import com.googlecode.hibernate.memcached.MemcacheClientFactory;
 import com.googlecode.hibernate.memcached.PropertiesHelper;
-import net.spy.memcached.*;
 
 /**
  * Parses hibernate properties to produce a MemcachedClient.<br/>
@@ -21,6 +30,8 @@ public class SpyMemcacheClientFactory implements MemcacheClientFactory {
     public static final String PROP_HASH_ALGORITHM = Config.PROP_PREFIX + "hashAlgorithm";
     public static final String PROP_CONNECTION_FACTORY = Config.PROP_PREFIX + "connectionFactory";
     public static final String PROP_DAEMON_MODE = Config.PROP_PREFIX + "daemonMode";
+    public static final String PROP_USERNAME = Config.PROP_PREFIX + "username";
+    public static final String PROP_PASSWORD = Config.PROP_PREFIX + "password";
     private final PropertiesHelper properties;
 
     public SpyMemcacheClientFactory(PropertiesHelper properties) {
@@ -67,6 +78,11 @@ public class SpyMemcacheClientFactory implements MemcacheClientFactory {
             public boolean isDaemon() {
                 return isDaemonMode();
             }
+
+            @Override
+            public AuthDescriptor getAuthDescriptor() {
+                return createAuthDescriptor();
+            }
         };
     }
 
@@ -80,6 +96,11 @@ public class SpyMemcacheClientFactory implements MemcacheClientFactory {
             @Override
             public boolean isDaemon() {
                 return isDaemonMode();
+            }
+
+            @Override
+            public AuthDescriptor getAuthDescriptor() {
+                return createAuthDescriptor();
             }
         };
     }
@@ -95,7 +116,22 @@ public class SpyMemcacheClientFactory implements MemcacheClientFactory {
             public boolean isDaemon() {
                 return isDaemonMode();
             }
+
+            @Override
+            public AuthDescriptor getAuthDescriptor() {
+                return createAuthDescriptor();
+            }
         };
+    }
+
+    protected AuthDescriptor createAuthDescriptor() {
+        String username = properties.get(PROP_USERNAME);
+        String password = properties.get(PROP_PASSWORD);
+        if (username == null || password == null) {
+            return null;
+        }
+        return new AuthDescriptor(new String[] { "PLAIN" },
+                new PlainCallbackHandler(username, password));
     }
 
     public String getServerList() {
@@ -120,7 +156,7 @@ public class SpyMemcacheClientFactory implements MemcacheClientFactory {
     public boolean isDaemonMode() {
         return properties.getBoolean(PROP_DAEMON_MODE, false);
     }
-    
+
     public HashAlgorithm getHashAlgorithm() {
         return properties.getEnum(PROP_HASH_ALGORITHM,
                 HashAlgorithm.class,
