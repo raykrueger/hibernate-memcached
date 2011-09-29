@@ -11,7 +11,7 @@ If you have any questions, or just want to drop a line to say it's working great
 Please note that this is an open source project. I work on it when I can and I implement what I feel like. I am volunteering my own free time for my own amusement.
 
 # Versions
-## 1.3-SNAPSHOT
+## 1.3
   * [HashCodeKeyStrategy][1] [StringKeyStrategy][2] are now both deprecated.
   * [Sha1KeyStrategy][3] is now the default strategy.
   * [Md5KeyStrategy][4] and [Sha1KeyStrategy][3] both digest the entire combined key now (region, clear index, key)
@@ -27,6 +27,9 @@ same data you were caching previously. Essentially, your cache will appear empty
 Also, as a result of these changes, 1.3 may not be binary compatible with any subclass hacks you may have written that
 extend HashCodeKeyStrategy, StringKeyStrategy, Md5KeyStrategy, or Sha1KeyStrategy. Note that the KeyStrategy interface 
 and AbstractKeyStrategy have not changed at all. If you implemented/extended those directly you're fine.
+
+  * Patch from @burtbeckwith to allow for memcached authentication via the spymemcached client.
+    This can be specified using "hibernate.memcached.username" and "hibernate.memcached.password"
 
 ## 1.2.2
   * Patch from ddlatham to allow the spymemcached library to be put 
