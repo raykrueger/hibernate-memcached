@@ -1,13 +1,14 @@
 package com.googlecode.hibernate.memcached.integration;
 
-import com.googlecode.hibernate.memcached.BaseTestCase;
+import java.util.Properties;
+
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 import org.hibernate.cfg.AnnotationConfiguration;
 import org.hibernate.cfg.Configuration;
 
-import java.util.Properties;
+import com.googlecode.hibernate.memcached.BaseTestCase;
 
 /**
  * DOCUMENT ME!
@@ -28,7 +29,6 @@ public abstract class AbstractHibernateTestCase extends BaseTestCase {
 
         config.setProperties(properties);
         config.addAnnotatedClass(Contact.class);
-
 
         return config;
     }
@@ -53,7 +53,8 @@ public abstract class AbstractHibernateTestCase extends BaseTestCase {
     }
 
     @Override
-    protected void setUp() {
+    protected void setUp() throws Exception {
+        super.setUp();
         setupBeforeTransaction();
         SessionFactory sessionFactory = getConfiguration().buildSessionFactory();
         session = sessionFactory.openSession();
@@ -68,7 +69,8 @@ public abstract class AbstractHibernateTestCase extends BaseTestCase {
     }
 
     @Override
-    protected void tearDown() {
+    protected void tearDown() throws Exception {
+        super.tearDown();
         try {
             tearDownInTransaction();
         } finally {
@@ -76,5 +78,4 @@ public abstract class AbstractHibernateTestCase extends BaseTestCase {
             session.close();
         }
     }
-
 }

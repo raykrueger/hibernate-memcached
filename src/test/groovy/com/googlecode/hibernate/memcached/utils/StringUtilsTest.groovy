@@ -29,6 +29,4 @@ class StringUtilsTest extends BaseTestCase {
             StringUtils.md5Hex(null)
         }
     }
-
-
 }

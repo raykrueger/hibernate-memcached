@@ -1,4 +1,5 @@
 package com.googlecode.hibernate.memcached
+
 /**
  * DOCUMENT ME!
  * @author Ray Krueger
@@ -72,7 +73,5 @@ class ConfigTest extends BaseTestCase {
 
         p["hibernate.memcached.memcacheClientFactory"] = "blah"
         assertEquals "blah", config.getMemcachedClientFactoryName()
-
-
     }
 }

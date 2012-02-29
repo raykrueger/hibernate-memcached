@@ -7,8 +7,8 @@ package com.googlecode.hibernate.memcached
  */
 class HashCodeKeyStrategyTest extends AbstractKeyStrategyTestCase {
 
-    public KeyStrategy getKeyStrategy() {
-        return new HashCodeKeyStrategy()
+    KeyStrategy getKeyStrategy() {
+        new HashCodeKeyStrategy()
     }
 
     void test() {
@@ -28,11 +28,10 @@ class HashCodeKeyStrategyTest extends AbstractKeyStrategyTestCase {
     }
 
     void test_really_long_key_throws_exception() {
-        String regionName = ""
-        250.times {regionName += "x"}
+        StringBuilder regionName = new StringBuilder()
+        250.times {regionName << "x"}
         shouldFail(IllegalArgumentException) {
-          getKeyStrategy().toKey(regionName, 0, "blah blah blah")
+            getKeyStrategy().toKey(regionName.toString(), 0, "blah blah blah")
         }
     }
-
 }

@@ -14,14 +14,14 @@
  */
 package com.googlecode.hibernate.memcached;
 
+import java.lang.reflect.Constructor;
+import java.util.Properties;
+
 import org.hibernate.cache.Cache;
 import org.hibernate.cache.CacheException;
 import org.hibernate.cache.CacheProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.lang.reflect.Constructor;
-import java.util.Properties;
 
 /**
  * Configures an instance of {@link MemcachedCache} for use as a second-level cache in Hibernate.
@@ -83,7 +83,7 @@ import java.util.Properties;
  */
 public class MemcachedCacheProvider implements CacheProvider {
 
-    private final Logger log = LoggerFactory.getLogger(MemcachedCacheProvider.class);
+    private final Logger log = LoggerFactory.getLogger(getClass());
 
     private Memcache client;
 
@@ -100,13 +100,9 @@ public class MemcachedCacheProvider implements CacheProvider {
             setKeyStrategy(keyStrategy, cache);
         }
 
-        cache.setCacheTimeSeconds(
-                config.getCacheTimeSeconds(regionName)
-        );
+        cache.setCacheTimeSeconds(config.getCacheTimeSeconds(regionName));
 
-        cache.setClearSupported(
-                config.isClearSupported(regionName)
-        );
+        cache.setClearSupported(config.isClearSupported(regionName));
 
         boolean dogpilePrevention = config.isDogpilePreventionEnabled(regionName);
         cache.setDogpilePreventionEnabled(dogpilePrevention);
