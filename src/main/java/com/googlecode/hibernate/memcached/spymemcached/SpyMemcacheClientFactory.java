@@ -10,6 +10,9 @@ import net.spy.memcached.MemcachedClient;
 import net.spy.memcached.auth.AuthDescriptor;
 import net.spy.memcached.auth.PlainCallbackHandler;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.googlecode.hibernate.memcached.Config;
 import com.googlecode.hibernate.memcached.Memcache;
 import com.googlecode.hibernate.memcached.MemcacheClientFactory;
@@ -23,6 +26,8 @@ import com.googlecode.hibernate.memcached.PropertiesHelper;
  */
 public class SpyMemcacheClientFactory implements MemcacheClientFactory {
 
+    private final Logger log = LoggerFactory.getLogger(getClass());
+
     public static final String PROP_SERVERS = Config.PROP_PREFIX + "servers";
     public static final String PROP_OPERATION_QUEUE_LENGTH = Config.PROP_PREFIX + "operationQueueLength";
     public static final String PROP_READ_BUFFER_SIZE = Config.PROP_PREFIX + "readBufferSize";
@@ -32,6 +37,7 @@ public class SpyMemcacheClientFactory implements MemcacheClientFactory {
     public static final String PROP_DAEMON_MODE = Config.PROP_PREFIX + "daemonMode";
     public static final String PROP_USERNAME = Config.PROP_PREFIX + "username";
     public static final String PROP_PASSWORD = Config.PROP_PREFIX + "password";
+    public static final String PROP_ASYNC_WRITES = Config.PROP_PREFIX + "asyncWrites";
     private final PropertiesHelper properties;
 
     public SpyMemcacheClientFactory(PropertiesHelper properties) {
@@ -43,7 +49,13 @@ public class SpyMemcacheClientFactory implements MemcacheClientFactory {
         ConnectionFactory connectionFactory = getConnectionFactory();
 
         MemcachedClient client = new MemcachedClient(connectionFactory, AddrUtil.getAddresses(getServerList()));
-        return new SpyMemcache(client);
+
+        boolean asyncWrites = "true".equals(properties.get(PROP_ASYNC_WRITES, "true"));
+
+        log.debug("Creating new SpyMemcache with connectionFactory {} and asyncWrites: {}",
+              connectionFactory.getClass().getName(), asyncWrites);
+
+        return new SpyMemcache(client, connectionFactory, asyncWrites);
     }
 
     protected ConnectionFactory getConnectionFactory() {
