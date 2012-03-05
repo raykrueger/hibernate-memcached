@@ -16,9 +16,16 @@ class LoggingMemcacheExceptionHandlerTest extends BaseTestCase {
 
     def handler = new LoggingMemcacheExceptionHandler()
     Logger logger = Logger.getLogger(LoggingMemcacheExceptionHandler)
+    def appenders = null
 
     protected void setUp() {
+        appenders = logger.getAllAppenders()
         logger.removeAllAppenders()
+    }
+
+    protected void tearDown() {
+        logger.removeAllAppenders()
+        appenders.each(){appender -> logger.addAppender(appender)}
     }
 
     void testDelete() {
