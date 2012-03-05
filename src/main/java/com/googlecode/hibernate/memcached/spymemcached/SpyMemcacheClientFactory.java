@@ -26,7 +26,7 @@ import com.googlecode.hibernate.memcached.PropertiesHelper;
  */
 public class SpyMemcacheClientFactory implements MemcacheClientFactory {
 
-    private final Logger log = LoggerFactory.getLogger(getClass());
+    private final Logger log = LoggerFactory.getLogger(SpyMemcacheClientFactory.class);
 
     public static final String PROP_SERVERS = Config.PROP_PREFIX + "servers";
     public static final String PROP_OPERATION_QUEUE_LENGTH = Config.PROP_PREFIX + "operationQueueLength";
