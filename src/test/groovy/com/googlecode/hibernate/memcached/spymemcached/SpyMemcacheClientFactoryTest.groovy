@@ -61,6 +61,7 @@ class SpyMemcacheClientFactoryTest extends BaseTestCase {
     }
 
     protected void tearDown() {
+        super.tearDown()
         client?.shutdown()
     }
 }

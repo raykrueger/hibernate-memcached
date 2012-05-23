@@ -10,6 +10,7 @@ abstract class AbstractKeyStrategyTestCase extends BaseTestCase {
     protected KeyStrategy strategy
 
     protected void setUp() {
+        super.setUp()
         strategy = getKeyStrategy()
     }
 
@@ -19,11 +20,10 @@ abstract class AbstractKeyStrategyTestCase extends BaseTestCase {
     }
 
     void assert_null_key_does_not_validate() {
-        shouldFailWithCause(IllegalArgumentException.class) {
+        shouldFail(IllegalArgumentException) {
             strategy.toKey(null, 0, null)
         }
     }
 
-    abstract KeyStrategy getKeyStrategy();
-
+    abstract KeyStrategy getKeyStrategy()
 }

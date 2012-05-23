@@ -1,12 +1,6 @@
 package com.googlecode.hibernate.memcached
 
-import org.apache.log4j.Appender
-import org.apache.log4j.Layout
 import org.apache.log4j.Logger
-import org.apache.log4j.spi.ErrorHandler
-import org.apache.log4j.spi.Filter
-import org.apache.log4j.spi.LoggingEvent
-import org.junit.Assert
 
 /**
  * This test is lame, I have no idea what I should do to make it better.
@@ -18,6 +12,7 @@ class LoggingMemcacheExceptionHandlerTest extends BaseTestCase {
     Logger logger = Logger.getLogger(LoggingMemcacheExceptionHandler)
 
     protected void setUp() {
+        super.setUp()
         logger.removeAllAppenders()
     }
 
@@ -52,5 +47,4 @@ class LoggingMemcacheExceptionHandlerTest extends BaseTestCase {
         handler.handleErrorOnSet "blah", 300, new Object(), exception
         assert appender.appenderCalled
     }
-
 }

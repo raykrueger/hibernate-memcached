@@ -1,10 +1,9 @@
 package com.googlecode.hibernate.memcached;
 
-import com.googlecode.hibernate.memcached.utils.StringUtils;
+import java.util.regex.Pattern;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.regex.Pattern;
 
 /**
  * KeyStrategy base class that handles concatenation, cleaning, and truncating the final cache key.
@@ -30,7 +29,8 @@ public abstract class AbstractKeyStrategy implements KeyStrategy {
         String keyString = concatenateKey(regionName, clearIndex, transformKeyObject(key));
 
         if (keyString.length() > MAX_KEY_LENGTH) {
-            throw new IllegalArgumentException("Key is longer than " + MAX_KEY_LENGTH + " characters, try using the Sha1KeyStrategy: " + keyString);
+            throw new IllegalArgumentException("Key is longer than " + MAX_KEY_LENGTH +
+                 " characters, try using the Sha1KeyStrategy: " + keyString);
         }
 
         String finalKey = CLEAN_PATTERN.matcher(keyString).replaceAll("");
@@ -41,11 +41,6 @@ public abstract class AbstractKeyStrategy implements KeyStrategy {
     protected abstract String transformKeyObject(Object key);
 
     protected String concatenateKey(String regionName, long clearIndex, Object key) {
-        return new StringBuilder()
-                .append(regionName)
-                .append(":")
-                .append(clearIndex)
-                .append(":")
-                .append(String.valueOf(key)).toString();
+        return regionName + ":" + clearIndex + ":" + key;
     }
 }

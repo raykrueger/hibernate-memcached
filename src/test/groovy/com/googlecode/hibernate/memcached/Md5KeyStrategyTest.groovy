@@ -7,8 +7,8 @@ package com.googlecode.hibernate.memcached
  */
 class Md5KeyStrategyTest extends AbstractKeyStrategyTestCase {
 
-    public KeyStrategy getKeyStrategy() {
-        return new Md5KeyStrategy()
+    KeyStrategy getKeyStrategy() {
+        new Md5KeyStrategy()
     }
 
     void test() {
@@ -28,9 +28,9 @@ class Md5KeyStrategyTest extends AbstractKeyStrategyTestCase {
     }
 
     void test_really_long_keys_get_truncated() {
-        String regionName = ""
-        250.times {regionName += "x"}
-        assert_cache_key_equals "16df3d87c2f8bde43fcdbb545be10626", regionName, 0, "blah blah blah"
+        StringBuilder regionName = new StringBuilder()
+        250.times {regionName << "x"}
+        assert_cache_key_equals "16df3d87c2f8bde43fcdbb545be10626", regionName.toString(), 0, "blah blah blah"
     }
 
 }

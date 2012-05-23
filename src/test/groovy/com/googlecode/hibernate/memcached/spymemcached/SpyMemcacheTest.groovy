@@ -16,11 +16,13 @@ class SpyMemcacheTest extends BaseTestCase {
     MemcachedClient client
 
     protected void setUp() {
+        super.setUp()
         client = new MemcachedClient(AddrUtil.getAddresses("localhost:11211"))
         cache = new MemcachedCache("MemcachedCacheTest", new SpyMemcache(client))
     }
 
     protected void tearDown() {
+        super.tearDown()
         client.shutdown()
     }
 
@@ -39,5 +41,4 @@ class SpyMemcacheTest extends BaseTestCase {
         Thread.sleep(100)
         assertNull(cache.get("test"))
     }
-
 }

@@ -12,9 +12,8 @@ class LoggingConfig {
         System.setProperty "net.spy.log.LoggerImpl", "net.spy.log.Log4JLogger"
     }
 
-    public static void initializeLogging() {
-        BasicConfigurator.resetConfiguration();
-        BasicConfigurator.configure();
+    static void initializeLogging() {
+        BasicConfigurator.resetConfiguration()
+        BasicConfigurator.configure()
     }
-
 }

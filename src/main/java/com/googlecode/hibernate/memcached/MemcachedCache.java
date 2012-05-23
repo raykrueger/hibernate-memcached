@@ -14,12 +14,12 @@
  */
 package com.googlecode.hibernate.memcached;
 
+import java.util.Map;
+
 import org.hibernate.cache.Cache;
 import org.hibernate.cache.CacheException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.Map;
 
 /**
  * Wrapper around MemcachedClient instance to provide the bridge between Hiberante and Memcached.
@@ -47,7 +47,7 @@ import java.util.Map;
  */
 public class MemcachedCache implements Cache {
 
-    private final Logger log = LoggerFactory.getLogger(MemcachedCache.class);
+    private final Logger log = LoggerFactory.getLogger(getClass());
 
     private final String regionName;
     private final Memcache memcache;
@@ -110,22 +110,20 @@ public class MemcachedCache implements Cache {
 
         if (dogpilePreventionEnabled) {
             return getUsingDogpilePrevention(objectKey);
-
-        } else {
-            log.debug("Memcache.get({})", objectKey);
-            return memcache.get(objectKey);
         }
+
+        log.debug("Memcache.get({})", objectKey);
+        return memcache.get(objectKey);
     }
 
     private Object getUsingDogpilePrevention(String objectKey) {
-        Map<String, Object> multi;
 
         String dogpileKey = dogpileTokenKey(objectKey);
         log.debug("Checking dogpile key: [{}]", dogpileKey);
 
         log.debug("Memcache.getMulti({}, {})", objectKey, dogpileKey);
-        multi = memcache.getMulti(dogpileKey, objectKey);
 
+        Map<String, Object> multi = memcache.getMulti(dogpileKey, objectKey);
         if ((multi == null) || (multi.get(dogpileKey) == null)) {
             log.debug("Dogpile key ({}) not found updating token and returning null", dogpileKey);
             memcache.set(dogpileKey, cacheTimeSeconds, DOGPILE_TOKEN);
@@ -227,6 +225,7 @@ public class MemcachedCache implements Cache {
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public String toString() {
         return "Memcached (" + regionName + ")";
     }

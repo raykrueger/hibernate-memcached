@@ -7,10 +7,9 @@ class PropertiesHelperTest extends BaseTestCase {
     PropertiesHelper helper
 
     protected void setUp() {
+        super.setUp()
         helper = newHelper()
     }
-
-
 
     void test_strings() {
         assertEquals "world", helper.get("hello")
@@ -53,7 +52,6 @@ class PropertiesHelperTest extends BaseTestCase {
         shouldFail(IllegalArgumentException) {
             helper.getEnum("hello", TimeUnit, TimeUnit.NANOSECONDS)
         }
-
     }
 
     void test_find_values() {
@@ -62,14 +60,11 @@ class PropertiesHelperTest extends BaseTestCase {
     }
 
     PropertiesHelper newHelper() {
-        Properties props = new Properties()
-        props.hello = "world"
-        props.one = "1"
-        props.thisIsTrue = "true"
-        props.thisIsFalse = "false"
-        props.seconds = "SECONDS"
-
-        new PropertiesHelper(props)
+        new PropertiesHelper(
+            [hello: "world",
+             one: "1",
+             thisIsTrue: "true",
+             thisIsFalse: "false",
+             seconds: "SECONDS"] as Properties)
     }
-
 }

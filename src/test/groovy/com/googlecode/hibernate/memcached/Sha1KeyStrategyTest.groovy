@@ -7,8 +7,8 @@ package com.googlecode.hibernate.memcached
  */
 class Sha1KeyStrategyTest extends AbstractKeyStrategyTestCase {
 
-    public KeyStrategy getKeyStrategy() {
-        return new Sha1KeyStrategy()
+    KeyStrategy getKeyStrategy() {
+        new Sha1KeyStrategy()
     }
 
     void test() {
@@ -28,9 +28,8 @@ class Sha1KeyStrategyTest extends AbstractKeyStrategyTestCase {
     }
 
     void test_really_long_keys_get_truncated() {
-        String regionName = ""
-        250.times {regionName += "x"}
-        assert_cache_key_equals "7f00c6faf1fefaf62cabb512285cc60ce641d5c8", regionName, 0, "blah blah blah"
+        StringBuilder regionName = new StringBuilder()
+        250.times {regionName << "x"}
+        assert_cache_key_equals "7f00c6faf1fefaf62cabb512285cc60ce641d5c8", regionName.toString(), 0, "blah blah blah"
     }
-
 }
