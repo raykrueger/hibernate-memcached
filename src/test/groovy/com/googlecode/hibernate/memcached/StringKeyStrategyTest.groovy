@@ -19,10 +19,6 @@ class StringKeyStrategyTest extends AbstractKeyStrategyTestCase {
         assert_cache_key_equals "null:0:boing", null, 0, "boing"
     }
 
-    void test_null_key_does_not_validate() {
-        assert_null_key_does_not_validate()
-    }
-
     void test_spaces() {
         assert_cache_key_equals "Ihavespaces:0:sodoI", "I have spaces", 0, "so do I"
     }

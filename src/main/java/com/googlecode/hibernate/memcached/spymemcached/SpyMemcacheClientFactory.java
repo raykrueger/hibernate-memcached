@@ -1,12 +1,6 @@
 package com.googlecode.hibernate.memcached.spymemcached;
 
-import net.spy.memcached.AddrUtil;
-import net.spy.memcached.BinaryConnectionFactory;
-import net.spy.memcached.ConnectionFactory;
-import net.spy.memcached.DefaultConnectionFactory;
-import net.spy.memcached.HashAlgorithm;
-import net.spy.memcached.KetamaConnectionFactory;
-import net.spy.memcached.MemcachedClient;
+import net.spy.memcached.*;
 import net.spy.memcached.auth.AuthDescriptor;
 import net.spy.memcached.auth.PlainCallbackHandler;
 
@@ -159,8 +153,8 @@ public class SpyMemcacheClientFactory implements MemcacheClientFactory {
 
     public HashAlgorithm getHashAlgorithm() {
         return properties.getEnum(PROP_HASH_ALGORITHM,
-                HashAlgorithm.class,
-                HashAlgorithm.NATIVE_HASH);
+                DefaultHashAlgorithm.class,
+                DefaultHashAlgorithm.NATIVE_HASH);
     }
 
     public String getConnectionFactoryName() {
