@@ -1,12 +1,11 @@
 package com.googlecode.hibernate.memcached.spymemcached
 
-import net.spy.memcached.HashAlgorithm
-import net.spy.memcached.MemcachedClient
-import net.spy.memcached.auth.PlainCallbackHandler
-
 import com.googlecode.hibernate.memcached.BaseTestCase
 import com.googlecode.hibernate.memcached.Memcache
 import com.googlecode.hibernate.memcached.PropertiesHelper
+import net.spy.memcached.DefaultHashAlgorithm
+import net.spy.memcached.MemcachedClient
+import net.spy.memcached.auth.PlainCallbackHandler
 
 class SpyMemcacheClientFactoryTest extends BaseTestCase {
 
@@ -22,7 +21,7 @@ class SpyMemcacheClientFactoryTest extends BaseTestCase {
     void test_all_properties_set() {
 
         properties.setProperty "hibernate.memcached.servers", "localhost:11211 localhost:11212"
-        properties.setProperty "hibernate.memcached.hashAlgorithm", HashAlgorithm.CRC32_HASH.name()
+        properties.setProperty "hibernate.memcached.hashAlgorithm", DefaultHashAlgorithm.CRC_HASH.name()
         properties.setProperty "hibernate.memcached.operationQueueLength", "8192"
         properties.setProperty "hibernate.memcached.readBufferLength", "8192"
         properties.setProperty "hibernate.memcached.operationTimeout", "5000"

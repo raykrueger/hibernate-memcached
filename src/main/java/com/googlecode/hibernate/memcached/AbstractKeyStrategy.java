@@ -1,6 +1,5 @@
 package com.googlecode.hibernate.memcached;
 
-import com.googlecode.hibernate.memcached.utils.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
