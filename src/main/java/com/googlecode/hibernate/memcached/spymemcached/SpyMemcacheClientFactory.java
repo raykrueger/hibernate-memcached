@@ -4,6 +4,7 @@ import net.spy.memcached.AddrUtil;
 import net.spy.memcached.BinaryConnectionFactory;
 import net.spy.memcached.ConnectionFactory;
 import net.spy.memcached.DefaultConnectionFactory;
+import net.spy.memcached.DefaultHashAlgorithm;
 import net.spy.memcached.HashAlgorithm;
 import net.spy.memcached.KetamaConnectionFactory;
 import net.spy.memcached.MemcachedClient;
@@ -159,8 +160,8 @@ public class SpyMemcacheClientFactory implements MemcacheClientFactory {
 
     public HashAlgorithm getHashAlgorithm() {
         return properties.getEnum(PROP_HASH_ALGORITHM,
-                HashAlgorithm.class,
-                HashAlgorithm.NATIVE_HASH);
+        		DefaultHashAlgorithm.class,
+                DefaultHashAlgorithm.NATIVE_HASH);
     }
 
     public String getConnectionFactoryName() {
