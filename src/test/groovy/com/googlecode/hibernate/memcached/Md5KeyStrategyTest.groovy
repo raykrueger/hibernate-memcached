@@ -19,10 +19,6 @@ class Md5KeyStrategyTest extends AbstractKeyStrategyTestCase {
         assert_cache_key_equals "cf23c7bb0c99979d4be1129adc959e6f", null, 0, "boing"
     }
 
-    void test_null_key_does_not_validate() {
-        assert_null_key_does_not_validate()
-    }
-
     void test_spaces() {
         assert_cache_key_equals "0564810c2fd4e86dc6f355ad99e7d01b", "I have spaces", 0, "so do I"
     }

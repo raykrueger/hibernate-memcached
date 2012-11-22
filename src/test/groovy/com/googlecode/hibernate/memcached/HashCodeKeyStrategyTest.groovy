@@ -1,5 +1,7 @@
 package com.googlecode.hibernate.memcached
 
+import org.junit.Test
+
 /**
  * DOCUMENT ME!
  *
@@ -17,10 +19,6 @@ class HashCodeKeyStrategyTest extends AbstractKeyStrategyTestCase {
 
     void test_null_region() {
         assert_cache_key_equals "null:0:93916277", null, 0, "boing"
-    }
-
-    void test_null_key_does_not_validate() {
-        assert_null_key_does_not_validate()
     }
 
     void test_spaces() {

@@ -19,10 +19,6 @@ class Sha1KeyStrategyTest extends AbstractKeyStrategyTestCase {
         assert_cache_key_equals "6afcec5614479d46a1ec6d73dabbc2cea154da3c", null, 0, "boing"
     }
 
-    void test_null_key_does_not_validate() {
-        assert_null_key_does_not_validate()
-    }
-
     void test_spaces() {
         assert_cache_key_equals "949b2a6fce917d85bd56e6197c93b3affa694e50", "I have spaces", 0, "so do I"
     }
