@@ -9,3 +9,4 @@ nb-configuration.xml
 *.ipr
 *.iws
 .idea
+*.swp
