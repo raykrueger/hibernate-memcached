@@ -28,7 +28,7 @@
         <repository>
             <id>mine</id>
             <name>mine</name>
-            <url>http://raykrueger.googlecode.com/svn/repository</url>
+            <url>https://github.com/raykrueger/hibernate-memcached</url>
         </repository>
         <repository>
             <id>maven2-repository</id>
@@ -66,13 +66,6 @@
     </distributionManagement>
 
     <build>
-        <extensions>
-            <extension>
-                <groupId>org.jvnet.wagon-svn</groupId>
-                <artifactId>wagon-svn</artifactId>
-                <version>1.8</version>
-            </extension>
-        </extensions>
         <plugins>
           <plugin>
             <groupId>org.apache.maven.plugins</groupId>
@@ -221,17 +214,6 @@
                   </goals>
                 </execution>
               </executions>
-            </plugin>
-            <plugin>
-              <groupId>org.sonatype.plugins</groupId>
-              <artifactId>nexus-staging-maven-plugin</artifactId>
-              <version>1.6.3</version>
-              <extensions>true</extensions>
-              <configuration>
-                <serverId>ossrh</serverId>
-                <nexusUrl>https://oss.sonatype.org/</nexusUrl>
-                <autoReleaseAfterClose>true</autoReleaseAfterClose>
-              </configuration>
             </plugin>
         </plugins>
     </build>
