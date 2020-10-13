@@ -51,7 +51,7 @@
     <properties>
         <gmaven.version>1.4</gmaven.version>
         <groovy.version>1.8.5</groovy.version>
-        <junit.version>4.8.2</junit.version>
+        <junit.version>4.13.1</junit.version>
     </properties>
 
     <distributionManagement>
